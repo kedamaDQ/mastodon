@@ -40,6 +40,7 @@ export default class ComposeForm extends ImmutablePureComponent {
     privacy: PropTypes.string,
     spoiler_text: PropTypes.string,
     focusDate: PropTypes.instanceOf(Date),
+    caretPosition: PropTypes.number,
     preselectDate: PropTypes.instanceOf(Date),
     is_submitting: PropTypes.bool,
     is_uploading: PropTypes.bool,
@@ -96,12 +97,17 @@ export default class ComposeForm extends ImmutablePureComponent {
   }
 
   onSuggestionSelected = (tokenStart, token, value) => {
-    this._restoreCaret = null;
     this.props.onSuggestionSelected(tokenStart, token, value);
   }
 
   handleChangeSpoilerText = (e) => {
     this.props.onChangeSpoilerText(e.target.value);
+  }
+
+  handleClickSpoilerButton = () => {
+    if (!this.props.spoiler) {
+      this.spoilerInput.focus();
+    }
   }
 
   componentDidUpdate (prevProps) {
@@ -116,9 +122,9 @@ export default class ComposeForm extends ImmutablePureComponent {
       if (this.props.preselectDate !== prevProps.preselectDate) {
         selectionEnd   = this.props.text.length;
         selectionStart = this.props.text.search(/\s/) + 1;
-      } else if (typeof this._restoreCaret === 'number') {
-        selectionStart = this._restoreCaret;
-        selectionEnd   = this._restoreCaret;
+      } else if (typeof this.props.caretPosition === 'number') {
+        selectionStart = this.props.caretPosition;
+        selectionEnd   = this.props.caretPosition;
       } else {
         selectionEnd   = this.props.text.length;
         selectionStart = selectionEnd;
@@ -135,13 +141,15 @@ export default class ComposeForm extends ImmutablePureComponent {
     this.autosuggestTextarea = c;
   }
 
+  setSpoilerText = (c) => {
+    this.spoilerInput = c;
+  }
+
   handleEmojiPick = (data) => {
     const { text }     = this.props;
     const position     = this.autosuggestTextarea.textarea.selectionStart;
-    const emojiChar    = data.native;
     const needsSpace   = data.custom && position > 0 && !allowedAroundShortCode.includes(text[position - 1]);
 
-    this._restoreCaret = position + emojiChar.length + 1 + (needsSpace ? 1 : 0);
     this.props.onPickEmoji(position, data, needsSpace);
   }
 
@@ -166,7 +174,7 @@ export default class ComposeForm extends ImmutablePureComponent {
           <div className='spoiler-input'>
             <label>
               <span style={{ display: 'none' }}>{intl.formatMessage(messages.spoiler_placeholder)}</span>
-              <input placeholder={intl.formatMessage(messages.spoiler_placeholder)} value={this.props.spoiler_text} onChange={this.handleChangeSpoilerText} onKeyDown={this.handleKeyDown} type='text' className='spoiler-input__input'  id='cw-spoiler-input' />
+              <input placeholder={intl.formatMessage(messages.spoiler_placeholder)} value={this.props.spoiler_text} onChange={this.handleChangeSpoilerText} onKeyDown={this.handleKeyDown} type='text' className='spoiler-input__input'  id='cw-spoiler-input' ref={this.setSpoilerText} />
             </label>
           </div>
         </Collapsable>
@@ -201,7 +209,9 @@ export default class ComposeForm extends ImmutablePureComponent {
             <UploadButtonContainer />
             <PrivacyDropdownContainer />
             <SensitiveButtonContainer />
-            <SpoilerButtonContainer />
+            <SpoilerButtonContainer
+              onClick={this.handleClickSpoilerButton}
+            />
           </div>
           <div className='character-counter__wrapper'><CharacterCounter max={500} text={text} /></div>
         </div>
