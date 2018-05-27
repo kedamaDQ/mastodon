@@ -104,6 +104,12 @@ export default class ComposeForm extends ImmutablePureComponent {
     this.props.onChangeSpoilerText(e.target.value);
   }
 
+  handleClickSpoilerButton = () => {
+    if (!this.props.spoiler) {
+      this.spoilerInput.focus();
+    }
+  }
+
   componentDidUpdate (prevProps) {
     // This statement does several things:
     // - If we're beginning a reply, and,
@@ -135,6 +141,10 @@ export default class ComposeForm extends ImmutablePureComponent {
     this.autosuggestTextarea = c;
   }
 
+  setSpoilerText = (c) => {
+    this.spoilerInput = c;
+  }
+
   handleEmojiPick = (data) => {
     const { text }     = this.props;
     const position     = this.autosuggestTextarea.textarea.selectionStart;
@@ -164,7 +174,7 @@ export default class ComposeForm extends ImmutablePureComponent {
           <div className='spoiler-input'>
             <label>
               <span style={{ display: 'none' }}>{intl.formatMessage(messages.spoiler_placeholder)}</span>
-              <input placeholder={intl.formatMessage(messages.spoiler_placeholder)} value={this.props.spoiler_text} onChange={this.handleChangeSpoilerText} onKeyDown={this.handleKeyDown} type='text' className='spoiler-input__input'  id='cw-spoiler-input' />
+              <input placeholder={intl.formatMessage(messages.spoiler_placeholder)} value={this.props.spoiler_text} onChange={this.handleChangeSpoilerText} onKeyDown={this.handleKeyDown} type='text' className='spoiler-input__input'  id='cw-spoiler-input' ref={this.setSpoilerText} />
             </label>
           </div>
         </Collapsable>
@@ -199,7 +209,9 @@ export default class ComposeForm extends ImmutablePureComponent {
             <UploadButtonContainer />
             <PrivacyDropdownContainer />
             <SensitiveButtonContainer />
-            <SpoilerButtonContainer />
+            <SpoilerButtonContainer
+              onClick={this.handleClickSpoilerButton}
+            />
           </div>
           <div className='character-counter__wrapper'><CharacterCounter max={500} text={text} /></div>
         </div>
