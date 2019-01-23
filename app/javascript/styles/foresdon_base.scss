@@ -566,6 +566,26 @@ body {
   }
 }
 
+.notification__filter-bar {
+  margin-bottom: 3px;
+  background: none;
+  border-bottom: none;
+
+  & button {
+    padding: 5px;
+    background: none;
+    border-radius: $foresdon-primary-border-radius;
+
+    &.active {
+      background-color: rgba($foresdon-ui-base-color, $foresdon-background-filter-alpha);
+
+      &::before, &::after {
+        content: none;
+      }
+    }
+  }
+}
+
 // Single column
 .tabs-bar {
   margin: 0;
