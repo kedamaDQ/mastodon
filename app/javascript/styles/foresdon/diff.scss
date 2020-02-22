@@ -585,6 +585,9 @@ body.layout-single-column {
   & .status.light .status__content {
     color: $ui-primary-color;
   }
+  & ul li:not(:empty) a {
+    color: $ui-primary-color;
+  }
 }
 
 .report-modal__statuses .status__content,
