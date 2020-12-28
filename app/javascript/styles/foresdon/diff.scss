@@ -598,6 +598,10 @@ body.layout-single-column {
   & ul li:not(:empty) a {
     color: $ui-primary-color;
   }
+
+  & .setting-toggle__label {
+    color: $ui-primary-color;
+  }
 }
 
 .report-modal__statuses .status__content,
