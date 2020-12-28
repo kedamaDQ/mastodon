@@ -455,6 +455,16 @@ body.layout-single-column {
   }
 }
 
+.notification,
+.status__wrapper {
+  &.unread {
+    &::before {
+      border-left: 3px solid $foresdon-ui-marker-color;
+      border-radius: $foresdon-primary-border-radius;
+    }
+  }
+}
+
 .account-authorize__wrapper {
   margin: 0 $foresdon-margin-right $foresdon-margin-bottom 0;
   background: rgba($ui-base-color, $foresdon-primary-ui-alpha);
