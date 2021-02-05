@@ -216,7 +216,7 @@ class ComposeForm extends ImmutablePureComponent {
             onSuggestionSelected={this.onSpoilerSuggestionSelected}
             searchTokens={[':']}
             id='cw-spoiler-input'
-            className='spoiler-input__input'
+            className={`spoiler-input__input spoiler-input__input--${this.props.privacy}`}
           />
         </div>
 
@@ -234,11 +234,12 @@ class ComposeForm extends ImmutablePureComponent {
           onSuggestionSelected={this.onSuggestionSelected}
           onPaste={onPaste}
           autoFocus={!showSearch && !isMobile(window.innerWidth)}
+          privacy={this.props.privacy}
         >
           <EmojiPickerDropdown onPickEmoji={this.handleEmojiPick} />
-          <div className='compose-form__modifiers'>
+          <div className={`compose-form__modifiers compose-form__modifiers--${this.props.privacy}`}>
             <UploadFormContainer />
-            <PollFormContainer />
+            <PollFormContainer privacy={this.props.privacy} />
           </div>
         </AutosuggestTextarea>
 

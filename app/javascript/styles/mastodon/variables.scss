@@ -56,3 +56,9 @@ $no-gap-breakpoint: 415px;
 $font-sans-serif: 'mastodon-font-sans-serif' !default;
 $font-display: 'mastodon-font-display' !default;
 $font-monospace: 'mastodon-font-monospace' !default;
+
+// Variables for compose form
+$compose-form-public-color: $simple-background-color;
+$compose-form-unlisted-color: #ffffe7;
+$compose-form-private-color: #ffefe7;
+$compose-form-direct-color: $compose-form-private-color;
