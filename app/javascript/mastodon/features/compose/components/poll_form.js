@@ -35,6 +35,7 @@ class Option extends React.PureComponent {
     onClearSuggestions: PropTypes.func.isRequired,
     onFetchSuggestions: PropTypes.func.isRequired,
     onSuggestionSelected: PropTypes.func.isRequired,
+    privacy: PropTypes.string,
     intl: PropTypes.object.isRequired,
   };
 
@@ -72,7 +73,7 @@ class Option extends React.PureComponent {
   }
 
   render () {
-    const { isPollMultiple, title, index, autoFocus, intl } = this.props;
+    const { isPollMultiple, title, index, autoFocus, privacy, intl } = this.props;
 
     return (
       <li>
@@ -98,6 +99,7 @@ class Option extends React.PureComponent {
             onSuggestionSelected={this.onSuggestionSelected}
             searchTokens={[':']}
             autoFocus={autoFocus}
+            className={`poll__textinput--${privacy}`}
           />
         </label>
 
@@ -126,6 +128,7 @@ class PollForm extends ImmutablePureComponent {
     onClearSuggestions: PropTypes.func.isRequired,
     onFetchSuggestions: PropTypes.func.isRequired,
     onSuggestionSelected: PropTypes.func.isRequired,
+    privacy: PropTypes.string,
     intl: PropTypes.object.isRequired,
   };
 
@@ -142,7 +145,7 @@ class PollForm extends ImmutablePureComponent {
   };
 
   render () {
-    const { options, expiresIn, isMultiple, onChangeOption, onRemoveOption, intl, ...other } = this.props;
+    const { options, expiresIn, isMultiple, onChangeOption, onRemoveOption, privacy, intl, ...other } = this.props;
 
     if (!options) {
       return null;
@@ -153,14 +156,14 @@ class PollForm extends ImmutablePureComponent {
     return (
       <div className='compose-form__poll-wrapper'>
         <ul>
-          {options.map((title, i) => <Option title={title} key={i} index={i} onChange={onChangeOption} onRemove={onRemoveOption} isPollMultiple={isMultiple} onToggleMultiple={this.handleToggleMultiple} autoFocus={i === autoFocusIndex} {...other} />)}
+          {options.map((title, i) => <Option title={title} key={i} index={i} onChange={onChangeOption} onRemove={onRemoveOption} isPollMultiple={isMultiple} onToggleMultiple={this.handleToggleMultiple} autoFocus={i === autoFocusIndex} privacy={privacy} {...other} />)}
         </ul>
 
         <div className='poll__footer'>
           <button disabled={options.size >= 4} className='button button-secondary' onClick={this.handleAddOption}><Icon id='plus' /> <FormattedMessage {...messages.add_option} /></button>
 
           {/* eslint-disable-next-line jsx-a11y/no-onchange */}
-          <select value={expiresIn} onChange={this.handleSelectDuration}>
+          <select value={expiresIn} onChange={this.handleSelectDuration} className={privacy}>
             <option value={300}>{intl.formatMessage(messages.minutes, { number: 5 })}</option>
             <option value={1800}>{intl.formatMessage(messages.minutes, { number: 30 })}</option>
             <option value={3600}>{intl.formatMessage(messages.hours, { number: 1 })}</option>

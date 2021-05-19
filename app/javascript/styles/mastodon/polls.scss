@@ -89,6 +89,24 @@
       &:focus {
         border-color: $highlight-text-color;
       }
+
+      &.poll__textinput {
+        &--public {
+          background: $compose-form-public-color;
+        }
+
+        &--unlisted {
+          background: $compose-form-unlisted-color;
+        }
+
+        &--private {
+          background: $compose-form-private-color;
+        }
+
+        &--direct {
+          background: $compose-form-direct-color;
+        }
+      }
     }
 
     &.selectable {
@@ -214,6 +232,22 @@
 
       &:focus {
         border-color: $highlight-text-color;
+      }
+
+      &.public {
+        background-color: $compose-form-public-color;
+      }
+
+      &.unlisted{
+        background-color: $compose-form-unlisted-color;
+      }
+
+      &.private {
+        background-color: $compose-form-private-color;
+      }
+
+      &.direct{
+        background-color: $compose-form-direct-color;
       }
     }
   }
