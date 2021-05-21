@@ -32,6 +32,8 @@
     = f.input :usable, as: :boolean, wrapper: :with_label
     = f.input :trendable, as: :boolean, wrapper: :with_label, disabled: !Setting.trends
     = f.input :listable, as: :boolean, wrapper: :with_label, disabled: !Setting.profile_directory
+-#    = f.input :trendable, as: :boolean, wrapper: :with_label
+-#    = f.input :listable, as: :boolean, wrapper: :with_label
 
   .actions
     = f.button :button, t('generic.save_changes'), type: :submit

@@ -40,7 +40,7 @@ class Tag < ApplicationRecord
   scope :trendable, -> { Setting.trendable_by_default ? where(trendable: [true, nil]) : where(trendable: true) }
   scope :discoverable, -> { listable.joins(:account_tag_stat).where(AccountTagStat.arel_table[:accounts_count].gt(0)).order(Arel.sql('account_tag_stats.accounts_count desc')) }
   scope :recently_used, ->(account) { joins(:statuses).where(statuses: { id: account.statuses.select(:id).limit(1000) }).group(:id).order(Arel.sql('count(*) desc')) }
-  scope :matches_name, ->(value) { where(arel_table[:name].matches("#{value}%")) }
+  scope :matches_name, ->(term) { where(arel_table[:name].lower.matches(arel_table.lower("#{sanitize_sql_like(Tag.normalize(term))}%"), nil, true)) } # Search with case-sensitive to use B-tree index
 
   delegate :accounts_count,
            :accounts_count=,
@@ -94,6 +94,10 @@ class Tag < ApplicationRecord
     requested_review_at.present?
   end
 
+  def use!(account, status: nil, at_time: Time.now.utc)
+    TrendingTags.record_use!(self, account, status: status, at_time: at_time)
+  end
+
   def trending?
     TrendingTags.trending?(self)
   end
@@ -126,10 +130,10 @@ class Tag < ApplicationRecord
     end
 
     def search_for(term, limit = 5, offset = 0, options = {})
-      normalized_term = normalize(term.strip)
-      pattern         = sanitize_sql_like(normalized_term) + '%'
-      query           = Tag.listable.where(arel_table[:name].lower.matches(pattern))
-      query           = query.where(arel_table[:name].lower.eq(normalized_term).or(arel_table[:reviewed_at].not_eq(nil))) if options[:exclude_unreviewed]
+      stripped_term = term.strip
+
+      query = Tag.listable.matches_name(stripped_term)
+      query = query.merge(matching_name(stripped_term).or(where.not(reviewed_at: nil))) if options[:exclude_unreviewed]
 
       query.order(Arel.sql('length(name) ASC, name ASC'))
            .limit(limit)
@@ -145,7 +149,7 @@ class Tag < ApplicationRecord
     end
 
     def matching_name(name_or_names)
-      names = Array(name_or_names).map { |name| normalize(name).mb_chars.downcase.to_s }
+      names = Array(name_or_names).map { |name| arel_table.lower(normalize(name)) }
 
       if names.size == 1
         where(arel_table[:name].lower.eq(names.first))
@@ -153,8 +157,6 @@ class Tag < ApplicationRecord
         where(arel_table[:name].lower.in(names))
       end
     end
-
-    private
 
     def normalize(str)
       str.gsub(/\A#/, '')
