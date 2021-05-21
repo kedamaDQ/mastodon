@@ -16,6 +16,10 @@ class DirectoriesController < ApplicationController
     render :index
   end
 
+  def show
+    render :index
+  end
+
   private
 
   def require_enabled!
@@ -32,6 +36,7 @@ class DirectoriesController < ApplicationController
 
   def set_accounts
     @accounts = Account.local.discoverable.by_recent_status.page(params[:page]).per(20).tap do |query|
+      query.merge!(Account.tagged_with(@tag.id)) if @tag
       query.merge!(Account.not_excluded_by_account(current_account)) if current_account
     end
   end

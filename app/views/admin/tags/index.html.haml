@@ -6,6 +6,12 @@
 
 .filters
   .filter-subset
+    %strong= t('admin.tags.context')
+    %ul
+      %li= filter_link_to t('generic.all'), directory: nil
+      %li= filter_link_to t('admin.tags.directory'), directory: '1'
+
+  .filter-subset
     %strong= t('admin.tags.review')
     %ul
       %li= filter_link_to t('generic.all'), reviewed: nil, unreviewed: nil, pending_review: nil
