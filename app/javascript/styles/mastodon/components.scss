@@ -445,7 +445,8 @@
   }
 
   .autosuggest-textarea__textarea,
-  .spoiler-input__input {
+  .spoiler-input__input,
+  .fixed-input__input {
     display: block;
     box-sizing: border-box;
     width: 100%;
@@ -489,6 +490,11 @@
   }
 
   .spoiler-input__input {
+    border-radius: 4px;
+  }
+
+  .fixed-input__input {
+    margin-top: 5px;
     border-radius: 4px;
   }
 

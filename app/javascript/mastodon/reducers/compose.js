@@ -26,6 +26,7 @@ import {
   COMPOSE_SENSITIVITY_CHANGE,
   COMPOSE_SPOILERNESS_CHANGE,
   COMPOSE_SPOILER_TEXT_CHANGE,
+  COMPOSE_FIXED_TEXT_CHANGE,
   COMPOSE_VISIBILITY_CHANGE,
   COMPOSE_COMPOSING_CHANGE,
   COMPOSE_EMOJI_INSERT,
@@ -53,6 +54,9 @@ const initialState = ImmutableMap({
   sensitive: false,
   spoiler: false,
   spoiler_text: '',
+  fixed_text: '',
+  fixed_text_exists: false,
+  fixed_text_separator: '\n\n',
   privacy: null,
   text: '',
   focusDate: null,
@@ -278,6 +282,11 @@ export default function compose(state = initialState, action) {
     if (!state.get('spoiler')) return state;
     return state
       .set('spoiler_text', action.text)
+      .set('idempotencyKey', uuid());
+  case COMPOSE_FIXED_TEXT_CHANGE:
+    return state
+      .set('fixed_text_exists', action.text.trim().length > 0)
+      .set('fixed_text', action.text)
       .set('idempotencyKey', uuid());
   case COMPOSE_VISIBILITY_CHANGE:
     return state

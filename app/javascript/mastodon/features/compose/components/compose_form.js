@@ -44,6 +44,9 @@ class ComposeForm extends ImmutablePureComponent {
     spoiler: PropTypes.bool,
     privacy: PropTypes.string,
     spoilerText: PropTypes.string,
+    fixedText: PropTypes.string,
+    fixedTextExists: PropTypes.bool,
+    fixedTextSeparator: PropTypes.string,
     focusDate: PropTypes.instanceOf(Date),
     caretPosition: PropTypes.number,
     preselectDate: PropTypes.instanceOf(Date),
@@ -56,6 +59,7 @@ class ComposeForm extends ImmutablePureComponent {
     onFetchSuggestions: PropTypes.func.isRequired,
     onSuggestionSelected: PropTypes.func.isRequired,
     onChangeSpoilerText: PropTypes.func.isRequired,
+    onChangeFixedText: PropTypes.func.isRequired,
     onPaste: PropTypes.func.isRequired,
     onPickEmoji: PropTypes.func.isRequired,
     showSearch: PropTypes.bool,
@@ -78,7 +82,11 @@ class ComposeForm extends ImmutablePureComponent {
   }
 
   getFulltextForCharacterCounting = () => {
-    return [this.props.spoiler? this.props.spoilerText: '', countableText(this.props.text)].join('');
+    return [
+      this.props.spoiler? this.props.spoilerText: '',
+      countableText(this.props.text),
+      this.props.fixedTextExists? this.props.fixedTextSeparator + this.props.fixedText: ''
+    ].join('');
   }
 
   canSubmit = () => {
@@ -119,8 +127,16 @@ class ComposeForm extends ImmutablePureComponent {
     this.props.onSuggestionSelected(tokenStart, token, value, ['spoiler_text']);
   }
 
+  onFixedSuggestionSelected = (tokenStart, token, value) => {
+    this.props.onSuggestionSelected(tokenStart, token, value, ['fixed_text']);
+  }
+
   handleChangeSpoilerText = (e) => {
     this.props.onChangeSpoilerText(e.target.value);
+  }
+
+  handleChangeFixedText = (e) => {
+    this.props.onChangeFixedText(e.target.value);
   }
 
   handleFocus = () => {
@@ -261,6 +277,23 @@ class ComposeForm extends ImmutablePureComponent {
           <div className='character-counter__wrapper'><CharacterCounter max={500} text={this.getFulltextForCharacterCounting()} /></div>
         </div>
 
+        <div className='compose-form__fixed-input'>
+          <AutosuggestInput
+            placeholder='#dqxtv #delmulin ...'
+            value={this.props.fixedText}
+            onChange={this.handleChangeFixedText}
+            onKeyDown={this.handleKeyDown}
+            disabled={false}
+            ref={this.setFixedText}
+            suggestions={this.props.suggestions}
+            onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
+            onSuggestionsClearRequested={this.onSuggestionsClearRequested}
+            onSuggestionSelected={this.onFixedSuggestionSelected}
+            searchTokens={['#']}
+            id='fixed-input'
+            className={`fixed-input__input fixed-input__input--${this.props.privacy}`}
+          />
+        </div>
         <div className='compose-form__publish'>
           <div className='compose-form__publish-button-wrapper'><Button text={publishText} onClick={this.handleSubmit} disabled={!this.canSubmit()} block /></div>
         </div>
