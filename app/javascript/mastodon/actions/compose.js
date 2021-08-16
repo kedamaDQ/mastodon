@@ -46,6 +46,7 @@ export const COMPOSE_UNMOUNT = 'COMPOSE_UNMOUNT';
 export const COMPOSE_SENSITIVITY_CHANGE = 'COMPOSE_SENSITIVITY_CHANGE';
 export const COMPOSE_SPOILERNESS_CHANGE = 'COMPOSE_SPOILERNESS_CHANGE';
 export const COMPOSE_SPOILER_TEXT_CHANGE = 'COMPOSE_SPOILER_TEXT_CHANGE';
+export const COMPOSE_FIXED_TEXT_CHANGE = 'COMPOSE_FIXED_TEXT_CHANGE';
 export const COMPOSE_VISIBILITY_CHANGE  = 'COMPOSE_VISIBILITY_CHANGE';
 export const COMPOSE_LISTABILITY_CHANGE = 'COMPOSE_LISTABILITY_CHANGE';
 export const COMPOSE_COMPOSING_CHANGE = 'COMPOSE_COMPOSING_CHANGE';
@@ -130,7 +131,12 @@ export function directCompose(account, routerHistory) {
 
 export function submitCompose(routerHistory) {
   return function (dispatch, getState) {
-    const status = getState().getIn(['compose', 'text'], '');
+    const status = getState().getIn(['compose', 'fixed_text_exists'])?
+      [
+        getState().getIn(['compose', 'text'], ''),
+        getState().getIn(['compose', 'fixed_text'], ''),
+      ].join(getState().getIn(['compose', 'fixed_text_separator'], '')):
+      getState().getIn(['compose', 'text'], '');
     const media  = getState().getIn(['compose', 'media_attachments']);
 
     if ((!status || !status.length) && media.size === 0) {
@@ -581,6 +587,13 @@ export function changeComposeSpoilerness() {
 export function changeComposeSpoilerText(text) {
   return {
     type: COMPOSE_SPOILER_TEXT_CHANGE,
+    text,
+  };
+};
+
+export function changeComposeFixedText(text) {
+  return {
+    type: COMPOSE_FIXED_TEXT_CHANGE,
     text,
   };
 };
