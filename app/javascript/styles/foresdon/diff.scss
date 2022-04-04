@@ -156,7 +156,7 @@ body.layout-single-column {
     }
 
     & .directory__list {
-      min-height: 60vh;
+      margin-bottom: 20px;
     }
 
     & .directory__tag a {
@@ -548,6 +548,11 @@ body.layout-single-column {
   &__extra {
     background: rgba($ui-base-color, $foresdon-primary-ui-alpha);
   }
+}
+
+.account-card {
+  background: rgba($ui-base-color, $foresdon-primary-ui-alpha);
+  border-radius: $foresdon-primary-border-radius;
 }
 
 .directory__tag > div {
