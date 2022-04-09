@@ -646,6 +646,10 @@ body.layout-single-column {
   background: $ui-base-color;
   color: $ui-primary-color;
 
+  & .status__content p {
+    color: $ui-primary-color;
+  }
+
   & .poll__option.dialog-option {
     border: none;
 
