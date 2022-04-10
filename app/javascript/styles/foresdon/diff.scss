@@ -156,7 +156,7 @@ body.layout-single-column {
     }
 
     & .directory__list {
-      min-height: 60vh;
+      margin-bottom: 20px;
     }
 
     & .directory__tag a {
@@ -550,6 +550,15 @@ body.layout-single-column {
   }
 }
 
+.account-card {
+  background: rgba($ui-base-color, $foresdon-primary-ui-alpha);
+  border-radius: $foresdon-primary-border-radius;
+
+  &__bio::after {
+    background: none;
+  }
+}
+
 .directory__tag > div {
   background: rgba($ui-base-color, $foresdon-primary-ui-alpha);
 }
@@ -580,6 +589,10 @@ body.layout-single-column {
       background: rgba($ui-base-color, 0.20);
     }
   }
+}
+
+.flash-message {
+  background: rgba($ui-base-color, $foresdon-primary-ui-alpha);
 }
 
 .boost-modal,
@@ -628,6 +641,39 @@ body.layout-single-column {
     border-color: lighten($ui-base-color, 20%);
   }
 }
+
+.report-dialog-modal {
+  background: $ui-base-color;
+  color: $ui-primary-color;
+
+  & .status__content p {
+    color: $ui-primary-color;
+  }
+
+  & .poll__option.dialog-option {
+    border: none;
+
+    & .poll__input {
+      color: $ui-primary-color;
+      border-color: $ui-primary-color;
+
+      &.active {
+        color: $ui-primary-color;
+        border-color: $ui-primary-color;
+      }
+    }
+
+    & .poll__option__text strong {
+      color: $ui-primary-color;
+    }
+  }
+
+  & .button.button-secondary {
+    color: $ui-primary-color;
+    border-color: $ui-primary-color;
+  }
+}
+
 
 .list-adder {
   background: rgba($ui-base-color, $foresdon-primary-ui-alpha);
