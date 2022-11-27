@@ -1,3 +1,29 @@
+// Dependent colors
+$black: #000000;
+$white: #ffffff;
+
+$classic-base-color: #282c37;
+$classic-primary-color: #9baec8;
+$classic-secondary-color: #d9e1e8;
+$classic-highlight-color: #6364ff;
+
+$ui-base-color: rgba($classic-base-color, 0.8);
+$ui-base-color-overwrap: rgba($classic-base-color, 0.6);
+$ui-base-color-darken: rgba($classic-base-color, 0.9);
+$ui-highlight-color-transparent: rgba($classic-highlight-color, 0.6);
+
+$ui-column-header-color: darken($ui-base-color, 6%);
+
+/*
+ * transmittance of $ui-base-color = 0.2 (opacity = 0.8)
+ * the column-header has two overwrapping $ui-base-colors.
+ * transmittance of two overwrapping $ui-base-colors is 0.2 * 0.2 = 0.04
+ * as the opacity, 0.96(96%)
+ */
+$ui-header-color: darken(rgba($classic-base-color, 0.96), 6%);
+
+$inverted-text-color: $classic-primary-color;
+
 $foresdon-primary-border-radius: 8px;
 $foresdon-primary-ui-alpha: 0.75;
 $foresdon-margin-right: 2px;
