@@ -4,6 +4,7 @@ html {
 
 body, body.admin {
   background: url($foresdon-background-image) no-repeat fixed bottom center;
+  background-size: cover;
 
 
   @media screen and (max-width: calc($no-gap-breakpoint - 1px)) {
