@@ -194,8 +194,7 @@ export default class AutosuggestTextarea extends ImmutablePureComponent {
   };
 
   render () {
-    const { value, suggestions, disabled, placeholder, onKeyUp, autoFocus, privacy, children } = this.props;
-    const { value, suggestions, disabled, placeholder, onKeyUp, autoFocus, lang, children } = this.props;
+    const { value, suggestions, disabled, placeholder, onKeyUp, autoFocus, lang, privacy, children } = this.props;
     const { suggestionsHidden } = this.state;
 
     return [
