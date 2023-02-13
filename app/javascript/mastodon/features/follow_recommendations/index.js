@@ -68,8 +68,8 @@ class FollowRecommendations extends ImmutablePureComponent {
       }
     }));
 
-    router.history.push('/getting-started');
-  }
+    router.history.push('/home');
+  };
 
   render () {
     const { suggestions, isLoading } = this.props;

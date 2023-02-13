@@ -126,6 +126,11 @@ body, body.admin {
   }
 }
 
+.moved-account-banner,
+.follow-request-banner {
+  background-color: transparent;
+}
+
 .notification__filter-bar,
 .account__section-headline {
   background-color: transparent;
@@ -174,6 +179,10 @@ body, body.admin {
       background-color: transparent;
     }
   }
+}
+
+.account--panel {
+  background-color: transparent;
 }
 
 div[aria-label="Explore"] > .scrollable {
