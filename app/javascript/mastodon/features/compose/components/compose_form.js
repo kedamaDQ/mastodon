@@ -196,7 +196,7 @@ class ComposeForm extends ImmutablePureComponent {
     } else if (this.props.spoiler !== prevProps.spoiler) {
       if (this.props.spoiler) {
         this.spoilerText.input.focus();
-      } else if (prevProps.spoiler) {
+      } else {
         this.autosuggestTextarea.textarea.focus();
       }
     }
