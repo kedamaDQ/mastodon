@@ -75,6 +75,8 @@ export const INIT_MEDIA_EDIT_MODAL = 'INIT_MEDIA_EDIT_MODAL';
 export const COMPOSE_CHANGE_MEDIA_DESCRIPTION = 'COMPOSE_CHANGE_MEDIA_DESCRIPTION';
 export const COMPOSE_CHANGE_MEDIA_FOCUS       = 'COMPOSE_CHANGE_MEDIA_FOCUS';
 
+export const COMPOSE_ELIMINATE_GAPS = 'COMPOSE_ELIMINATE_GAPS';
+
 export const COMPOSE_SET_STATUS = 'COMPOSE_SET_STATUS';
 
 const messages = defineMessages({
@@ -482,6 +484,12 @@ export function undoUploadCompose(media_id) {
   return {
     type: COMPOSE_UPLOAD_UNDO,
     media_id: media_id,
+  };
+}
+
+export function eliminateGaps() {
+  return {
+    type: COMPOSE_ELIMINATE_GAPS,
   };
 }
 
