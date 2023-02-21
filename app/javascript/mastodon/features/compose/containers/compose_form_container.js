@@ -3,6 +3,7 @@ import ComposeForm from '../components/compose_form';
 import {
   changeCompose,
   submitCompose,
+  eliminateGaps,
   clearComposeSuggestions,
   fetchComposeSuggestions,
   selectComposeSuggestion,
@@ -41,6 +42,10 @@ const mapDispatchToProps = (dispatch) => ({
 
   onSubmit (router) {
     dispatch(submitCompose(router));
+  },
+
+  onEliminateGaps () {
+    dispatch(eliminateGaps());
   },
 
   onClearSuggestions () {

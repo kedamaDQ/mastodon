@@ -47,6 +47,7 @@ import {
   COMPOSE_CHANGE_MEDIA_DESCRIPTION,
   COMPOSE_CHANGE_MEDIA_FOCUS,
   COMPOSE_SET_STATUS,
+  COMPOSE_ELIMINATE_GAPS,
 } from '../actions/compose';
 import { TIMELINE_DELETE } from '../actions/timelines';
 import { STORE_HYDRATE } from '../actions/store';
@@ -103,6 +104,8 @@ const initialPoll = ImmutableMap({
   expires_in: 24 * 3600,
   multiple: false,
 });
+
+const eliminateGapsRe = /(:[0-9a-zA-Z_]{2,}:) +(:[0-9a-zA-Z_]{2,}:)/gm;
 
 function statusToTextMentions(state, status) {
   let set = ImmutableOrderedSet([]);
@@ -489,6 +492,21 @@ export default function compose(state = initialState, action) {
         }));
       }
     });
+  case COMPOSE_ELIMINATE_GAPS:
+    return state
+      .set('text', state.get('text')
+        .replaceAll(eliminateGapsRe, '$1\u200B$2')
+        .replaceAll(eliminateGapsRe, '$1\u200B$2'),
+      )
+      .set('spoiler_text', state.get('spoiler_text')
+        .replaceAll(eliminateGapsRe, '$1\u200B$2')
+        .replaceAll(eliminateGapsRe, '$1\u200B$2'),
+      )
+      .set('fixed_text', state.get('fixed_text')
+        .replaceAll(eliminateGapsRe, '$1\u200B$2')
+        .replaceAll(eliminateGapsRe, '$1\u200B$2'),
+      )
+      .set('idempotencyKey', uuid());
   case COMPOSE_SET_STATUS:
     return state.withMutations(map => {
       map.set('id', action.status.get('id'));

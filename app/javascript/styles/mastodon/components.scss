@@ -557,7 +557,7 @@ body > [data-popper-placement] {
       all: unset;
     }
 
-    background-position: bottom 0px center;
+    background-position: bottom 0 center;
     background-size: 20%;
     background-repeat: no-repeat;
 
@@ -794,6 +794,12 @@ body > [data-popper-placement] {
     .compose-form__publish-button-wrapper {
       overflow: hidden;
       padding-top: 15px;
+    }
+
+    .compose-form__eliminate-gaps-button-wrapper {
+      overflow: hidden;
+      padding-top: 15px;
+      margin-right: 5px;
     }
   }
 }

@@ -22,6 +22,7 @@ import { countableText } from '../util/counter';
 import Icon from 'mastodon/components/icon';
 
 const allowedAroundShortCode = '><\u0085\u0020\u00a0\u1680\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u202f\u205f\u3000\u2028\u2029\u0009\u000a\u000b\u000c\u000d';
+const gapsBetweenEmojisRe = /:[0-9a-zA-Z_]{2,}: +:[0-9a-zA-Z_]{2,}:/m;
 
 const messages = defineMessages({
   placeholder: { id: 'compose_form.placeholder', defaultMessage: 'What is on your mind?' },
@@ -29,6 +30,7 @@ const messages = defineMessages({
   publish: { id: 'compose_form.publish', defaultMessage: 'Publish' },
   publishLoud: { id: 'compose_form.publish_loud', defaultMessage: '{publish}!' },
   saveChanges: { id: 'compose_form.save_changes', defaultMessage: 'Save changes' },
+  eliminateGaps: { id: 'compose_form.eliminate_gaps', defaultMessage: 'Eliminate gaps' },
 });
 
 export default @injectIntl
@@ -57,6 +59,7 @@ class ComposeForm extends ImmutablePureComponent {
     isUploading: PropTypes.bool,
     onChange: PropTypes.func.isRequired,
     onSubmit: PropTypes.func.isRequired,
+    onEliminateGaps: PropTypes.func.isRequired,
     onClearSuggestions: PropTypes.func.isRequired,
     onFetchSuggestions: PropTypes.func.isRequired,
     onSuggestionSelected: PropTypes.func.isRequired,
@@ -89,9 +92,9 @@ class ComposeForm extends ImmutablePureComponent {
     return [
       this.props.spoiler? this.props.spoilerText: '',
       countableText(this.props.text),
-      this.props.fixedTextExists? this.props.fixedTextSeparator + this.props.fixedText: ''
+      this.props.fixedTextExists? this.props.fixedTextSeparator + this.props.fixedText: '',
     ].join('');
-  }
+  };
 
   canSubmit = () => {
     const { isSubmitting, isChangingUpload, isUploading, anyMedia } = this.props;
@@ -119,6 +122,15 @@ class ComposeForm extends ImmutablePureComponent {
     }
   };
 
+  canEliminateGaps = () => {
+    const { isSubmitting, text, spoilerText, fixedText } = this.props;
+    return (gapsBetweenEmojisRe.test(text) || gapsBetweenEmojisRe.test(spoilerText) || gapsBetweenEmojisRe.test(fixedText)) && !isSubmitting;
+  };
+
+  handleElimenateGaps = () => {
+    this.props.onEliminateGaps();
+  };
+
   onSuggestionsClearRequested = () => {
     this.props.onClearSuggestions();
   };
@@ -137,7 +149,7 @@ class ComposeForm extends ImmutablePureComponent {
 
   onFixedSuggestionSelected = (tokenStart, token, value) => {
     this.props.onSuggestionSelected(tokenStart, token, value, ['fixed_text']);
-  }
+  };
 
   handleChangeSpoilerText = (e) => {
     this.props.onChangeSpoilerText(e.target.value);
@@ -145,7 +157,7 @@ class ComposeForm extends ImmutablePureComponent {
 
   handleChangeFixedText = (e) => {
     this.props.onChangeFixedText(e.target.value);
-  }
+  };
 
   handleFocus = () => {
     if (this.composeForm && !this.props.singleColumn) {
@@ -236,6 +248,8 @@ class ComposeForm extends ImmutablePureComponent {
       publishText = this.props.privacy !== 'unlisted' ? intl.formatMessage(messages.publishLoud, { publish: intl.formatMessage(messages.publish) }) : intl.formatMessage(messages.publish);
     }
 
+    const eliminateGaps = intl.formatMessage(messages.eliminateGaps);
+
     return (
       <form className='compose-form' onSubmit={this.handleSubmit}>
         <WarningContainer />
@@ -318,6 +332,15 @@ class ComposeForm extends ImmutablePureComponent {
           />
         </div>
         <div className='compose-form__publish'>
+          <div className='compose-form__eliminate-gaps-button-wrapper'>
+            <Button
+              type='button'
+              text={eliminateGaps}
+              disabled={!this.canEliminateGaps()}
+              onClick={this.handleElimenateGaps}
+              block
+            />
+          </div>
           <div className='compose-form__publish-button-wrapper'>
             <Button
               type='submit'

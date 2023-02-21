@@ -2,10 +2,10 @@ html {
   scrollbar-color: $ui-base-color transparent;
 }
 
-body, body.admin {
+body,
+body.admin {
   background: url($foresdon-background-image) no-repeat fixed bottom center;
   background-size: cover;
-
 
   @media screen and (max-width: calc($no-gap-breakpoint - 1px)) {
     background-position: 25% 80%;
@@ -25,7 +25,6 @@ body, body.admin {
   }
 }
 
-
 /* advanced web interface */
 .drawer {
   &__header {
@@ -34,7 +33,7 @@ body, body.admin {
     a {
       background-color: $ui-column-header-color;
       transition: background 100ms ease-in;
-  
+
       &:hover {
         background: lighten($ui-base-color, 3%);
         transition: background 200ms ease-out;
@@ -58,7 +57,7 @@ body, body.admin {
 
   &__inner {
     background-color: $ui-base-color;
-  
+
     &__mastodon {
       background-color: transparent;
     }
@@ -69,6 +68,7 @@ body, body.admin {
   .compose-form__warning {
     color: $classic-base-color;
   }
+
   .reply-indicator {
     color: $classic-base-color;
 
@@ -106,7 +106,7 @@ body, body.admin {
 }
 
 .language-dropdown__dropdown__results__item {
-    color: $classic-base-color;
+  color: $classic-base-color;
 }
 
 .search-results {
@@ -136,14 +136,15 @@ body, body.admin {
   background-color: transparent;
   border: none;
 
-  & a, button {
+  & a,
+  & button {
     flex: 2 1 auto;
     padding: 15px 5px;
     background-color: $ui-base-color-overwrap;
 
     &.active {
       background-color: $ui-base-color;
-  
+
       &::before,
       &::after {
         font-size: 8px;
@@ -153,12 +154,11 @@ body, body.admin {
         transform: none;
         color: $classic-highlight-color;
         content: "●";
-        transform: none;
         border: none;
       }
-  
+
       &::after {
-        bottom: 0px;
+        bottom: 0;
         border: none;
       }
     }
@@ -166,7 +166,8 @@ body, body.admin {
 }
 
 .notification__filter-bar {
-  & a, button {
+  & a,
+  & button {
     &.active {
       background-color: $ui-base-color;
     }
@@ -174,7 +175,8 @@ body, body.admin {
 }
 
 .account__section-headline {
-  & a, button {
+  & a,
+  & button {
     &.active {
       background-color: transparent;
     }
@@ -201,13 +203,13 @@ div[aria-label="Explore"] > .scrollable {
   }
 
   .account__section-headline {
-    & a, button {
+    & a,
+    & button {
       background-color: $ui-base-color-overwrap;
-  
+
       &.active {
         background-color: $ui-base-color;
       }
-  
     }
   }
 }
