@@ -92,9 +92,9 @@ class ComposeForm extends ImmutablePureComponent {
     return [
       this.props.spoiler? this.props.spoilerText: '',
       countableText(this.props.text),
-      this.props.fixedTextExists? this.props.fixedTextSeparator + this.props.fixedText: ''
+      this.props.fixedTextExists? this.props.fixedTextSeparator + this.props.fixedText: '',
     ].join('');
-  }
+  };
 
   canSubmit = () => {
     const { isSubmitting, isChangingUpload, isUploading, anyMedia } = this.props;
@@ -149,7 +149,7 @@ class ComposeForm extends ImmutablePureComponent {
 
   onFixedSuggestionSelected = (tokenStart, token, value) => {
     this.props.onSuggestionSelected(tokenStart, token, value, ['fixed_text']);
-  }
+  };
 
   handleChangeSpoilerText = (e) => {
     this.props.onChangeSpoilerText(e.target.value);
@@ -157,7 +157,7 @@ class ComposeForm extends ImmutablePureComponent {
 
   handleChangeFixedText = (e) => {
     this.props.onChangeFixedText(e.target.value);
-  }
+  };
 
   handleFocus = () => {
     if (this.composeForm && !this.props.singleColumn) {

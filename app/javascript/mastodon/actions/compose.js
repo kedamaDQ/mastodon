@@ -737,7 +737,7 @@ export function changeComposeFixedText(text) {
     type: COMPOSE_FIXED_TEXT_CHANGE,
     text,
   };
-};
+}
 
 export function changeComposeVisibility(value) {
   return {

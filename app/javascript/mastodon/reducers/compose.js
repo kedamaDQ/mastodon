@@ -495,16 +495,16 @@ export default function compose(state = initialState, action) {
   case COMPOSE_ELIMINATE_GAPS:
     return state
       .set('text', state.get('text')
-        .replaceAll(eliminateGapsRe, `$1\u200B$2`)
-        .replaceAll(eliminateGapsRe, `$1\u200B$2`)
+        .replaceAll(eliminateGapsRe, '$1\u200B$2')
+        .replaceAll(eliminateGapsRe, '$1\u200B$2'),
       )
       .set('spoiler_text', state.get('spoiler_text')
-        .replaceAll(eliminateGapsRe, `$1\u200B$2`)
-        .replaceAll(eliminateGapsRe, `$1\u200B$2`)
+        .replaceAll(eliminateGapsRe, '$1\u200B$2')
+        .replaceAll(eliminateGapsRe, '$1\u200B$2'),
       )
       .set('fixed_text', state.get('fixed_text')
-        .replaceAll(eliminateGapsRe, `$1\u200B$2`)
-        .replaceAll(eliminateGapsRe, `$1\u200B$2`)
+        .replaceAll(eliminateGapsRe, '$1\u200B$2')
+        .replaceAll(eliminateGapsRe, '$1\u200B$2'),
       )
       .set('idempotencyKey', uuid());
   case COMPOSE_SET_STATUS:
