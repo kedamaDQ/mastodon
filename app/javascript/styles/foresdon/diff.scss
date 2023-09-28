@@ -7,11 +7,11 @@ body.admin {
   background: url($foresdon-background-image) no-repeat fixed bottom center;
   background-size: cover;
 
-  @media screen and (max-width: calc($no-gap-breakpoint - 1px)) {
+  @media screen and (width <= calc($no-gap-breakpoint - 1px)) {
     background-position: 25% 80%;
   }
 
-  @media screen and (max-width: calc($no-gap-breakpoint - 285px - 1px)) {
+  @media screen and (width <= calc($no-gap-breakpoint - 285px - 1px)) {
     background-position: 38% 80%;
   }
 }
@@ -19,7 +19,7 @@ body.admin {
 .ui__header {
   background-color: $ui-base-color-darken;
 
-  @media screen and (max-width: calc($no-gap-breakpoint - 1px)) {
+  @media screen and (width <= calc($no-gap-breakpoint - 1px)) {
     background-color: darken(rgba($classic-base-color, 0.96), 6%);
     border-bottom: 0;
   }
@@ -86,7 +86,7 @@ body.admin {
 
   &__poll-wrapper {
     .button.button-secondary,
-    input[type="text"],
+    input[type='text'],
     select {
       color: $classic-base-color;
     }
@@ -139,21 +139,26 @@ body.admin {
   & a,
   & button {
     flex: 2 1 auto;
-    padding: 15px 5px;
+    padding: 15px 5px 0;
     background-color: $ui-base-color-overwrap;
 
     &.active {
       background-color: $ui-base-color;
 
-      &::before,
+      &::before {
+        display: none;
+      }
+
       &::after {
+        display: block;
+        margin: 0;
+        padding: 0;
+        text-align: center;
         font-size: 8px;
-        width: 8px;
         height: auto;
-        left: calc(50% - 4px);
         transform: none;
         color: $classic-highlight-color;
-        content: "●";
+        content: '●';
         border: none;
       }
 
@@ -187,7 +192,7 @@ body.admin {
   background-color: transparent;
 }
 
-div[aria-label="Explore"] > .scrollable {
+div[aria-label='Explore'] > .scrollable {
   background-color: transparent;
 
   .empty-column-indicator {
@@ -303,7 +308,7 @@ div[aria-label="Explore"] > .scrollable {
 .columns-area__panels__pane__inner {
   background-color: $ui-base-color;
 
-  @media screen and (max-width: calc($no-gap-breakpoint - 1px)) {
+  @media screen and (width <= calc($no-gap-breakpoint - 1px)) {
     background-color: transparent;
   }
 }
@@ -319,7 +324,7 @@ div[aria-label="Explore"] > .scrollable {
 
 .columns-area__panels__pane--navigational {
   .navigation-panel {
-    @media screen and (max-width: calc($no-gap-breakpoint - 1px)) {
+    @media screen and (width <= calc($no-gap-breakpoint - 1px)) {
       background-color: $ui-header-color;
       border-left: 0;
     }
@@ -330,7 +335,7 @@ div[aria-label="Explore"] > .scrollable {
   background-color: $ui-base-color;
 }
 
-div[aria-label="Explore"] {
+div[aria-label='Explore'] {
   .explore__search-results {
     .empty-column-indicator {
       background-color: transparent;
