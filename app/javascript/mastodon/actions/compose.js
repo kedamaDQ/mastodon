@@ -251,13 +251,14 @@ export function submitCompose(routerHistory) {
         insertIfOnline('public');
         insertIfOnline(`account:${response.data.account.id}`);
       }
-
+/* suppress toast which was added in v4.2.0
       dispatch(showAlert({
         message: statusId === null ? messages.published : messages.saved,
         action: messages.open,
         dismissAfter: 10000,
         onClick: () => routerHistory.push(`/@${response.data.account.username}/${response.data.id}`),
       }));
+*/
     }).catch(function (error) {
       dispatch(submitComposeFail(error));
     });
