@@ -16,13 +16,9 @@ body.admin {
   }
 }
 
-.ui__header {
-  background-color: $ui-base-color-darken;
-
-  @media screen and (width <= calc($no-gap-breakpoint - 1px)) {
-    background-color: darken(rgba($classic-base-color, 0.96), 6%);
-    border-bottom: 0;
-  }
+.layout-single-column .ui__header {
+  background-color: $ui-column-header-color;
+  border: none;
 }
 
 /* advanced web interface */
