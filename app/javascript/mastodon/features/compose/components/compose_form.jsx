@@ -311,9 +311,9 @@ class ComposeForm extends ImmutablePureComponent {
             privacy={this.props.privacy}
             lang={this.props.lang}
           >
-            <div className={`compose-form__modifiers modifiers--${this.props.privacy}`}>
+            <div className={`compose-form__modifiers compose-form__modifiers--${this.props.privacy}`}>
               <UploadFormContainer />
-              <PollFormContainer />
+              <PollFormContainer privacy={this.props.privacy} />
             </div>
           </AutosuggestTextarea>
           <EmojiPickerDropdown onPickEmoji={this.handleEmojiPick} />
