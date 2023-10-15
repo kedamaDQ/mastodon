@@ -12,7 +12,7 @@ $ui-base-color-overwrap: rgba($classic-base-color, 0.6);
 $ui-base-color-darken: rgba($classic-base-color, 0.9);
 $ui-highlight-color-transparent: rgba($classic-highlight-color, 0.6);
 
-$ui-column-header-color: darken($ui-base-color, 6%);
+$ui-column-header-color: $classic-base-color;
 
 /*
  * transmittance of $ui-base-color = 0.2 (opacity = 0.8)
