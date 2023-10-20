@@ -3,6 +3,11 @@
 class PublicStatusesIndex < Chewy::Index
   settings index: index_preset(refresh_interval: '30s', number_of_shards: 5), analysis: {
     filter: {
+      kuromoji_search_split: {
+        type: 'sudachi_split',
+        mode: 'search',
+      },
+
       english_stop: {
         type: 'stop',
         stopwords: '_english_',
@@ -19,6 +24,14 @@ class PublicStatusesIndex < Chewy::Index
       },
     },
 
+    tokenizer: {
+      sudachi_tokenizer: {
+        type: 'sudachi_tokenizer',
+        discard_punctuation: true,
+        additional_settings: '{"systemDict": "system_full.dic"}',
+      },
+    },
+
     analyzer: {
       verbatim: {
         tokenizer: 'uax_url_email',
@@ -26,15 +39,15 @@ class PublicStatusesIndex < Chewy::Index
       },
 
       content: {
-        tokenizer: 'standard',
+        tokenizer: 'sudachi_tokenizer',
         filter: %w(
           lowercase
           asciifolding
           cjk_width
-          elision
-          english_possessive_stemmer
-          english_stop
-          english_stemmer
+          kuromoji_search_split
+          sudachi_part_of_speech
+          sudachi_ja_stop
+          sudachi_normalizedform
         ),
       },
 
