@@ -21,13 +21,15 @@
 
 class Tag < ApplicationRecord
   include Paginable
+  include Reviewable
+
+  # rubocop:disable Rails/HasAndBelongsToMany
   has_and_belongs_to_many :statuses
   has_and_belongs_to_many :accounts
-  has_and_belongs_to_many :sample_accounts, -> { local.discoverable.popular.limit(3) }, class_name: 'Account'
+  # rubocop:enable Rails/HasAndBelongsToMany
 
   has_many :passive_relationships, class_name: 'TagFollow', inverse_of: :tag, dependent: :destroy
   has_many :featured_tags, dependent: :destroy, inverse_of: :tag
-  has_one :account_tag_stat, dependent: :destroy
   has_many :followers, through: :passive_relationships, source: :account
 
   HASHTAG_SEPARATORS = "_\u00B7\u30FB\u200c"
@@ -37,47 +39,33 @@ class Tag < ApplicationRecord
   HASHTAG_LAST_SEQUENCE = '([[:word:]_]*[[:alpha:]][[:word:]_]*)'
   HASHTAG_NAME_PAT = "#{HASHTAG_FIRST_SEQUENCE}|#{HASHTAG_LAST_SEQUENCE}"
 
-  HASHTAG_RE = %r{(?:^|[^/)\w])#(#{HASHTAG_NAME_PAT})}i
+  HASHTAG_RE = %r{(?<![=/)\p{Alnum}])#(#{HASHTAG_NAME_PAT})}
   HASHTAG_NAME_RE = /\A(#{HASHTAG_NAME_PAT})\z/i
-  HASHTAG_INVALID_CHARS_RE = /[^[:alnum:]#{HASHTAG_SEPARATORS}]/
+  HASHTAG_INVALID_CHARS_RE = /[^[:alnum:]\u0E47-\u0E4E#{HASHTAG_SEPARATORS}]/
+
+  RECENT_STATUS_LIMIT = 1000
 
   validates :name, presence: true, format: { with: HASHTAG_NAME_RE }
   validates :display_name, format: { with: HASHTAG_NAME_RE }
   validate :validate_name_change, if: -> { !new_record? && name_changed? }
   validate :validate_display_name_change, if: -> { !new_record? && display_name_changed? }
 
-  scope :reviewed, -> { where.not(reviewed_at: nil) }
-  scope :unreviewed, -> { where(reviewed_at: nil) }
   scope :pending_review, -> { unreviewed.where.not(requested_review_at: nil) }
   scope :usable, -> { where(usable: [true, nil]) }
+  scope :not_usable, -> { where(usable: false) }
   scope :listable, -> { where(listable: [true, nil]) }
   scope :trendable, -> { Setting.trendable_by_default ? where(trendable: [true, nil]) : where(trendable: true) }
   scope :not_trendable, -> { where(trendable: false) }
-  scope :discoverable, -> { listable.joins(:account_tag_stat).where(AccountTagStat.arel_table[:accounts_count].gt(0)).order(Arel.sql('account_tag_stats.accounts_count desc')) }
+  scope :suggestions_for_account, ->(account) { recently_used(account).not_featured_by(account) }
+  scope :not_featured_by, ->(account) { where.not(id: account.featured_tags.select(:tag_id)) }
   scope :recently_used, lambda { |account|
                           joins(:statuses)
-                            .where(statuses: { id: account.statuses.select(:id).limit(1000) })
+                            .where(statuses: { id: account.statuses.select(:id).limit(RECENT_STATUS_LIMIT) })
                             .group(:id).order(Arel.sql('count(*) desc'))
                         }
   scope :matches_name, ->(term) { where(arel_table[:name].lower.matches(arel_table.lower("#{sanitize_sql_like(Tag.normalize(term))}%"), nil, true)) } # Search with case-sensitive to use B-tree index
 
-  delegate :accounts_count,
-           :accounts_count=,
-           :increment_count!,
-           :decrement_count!,
-           to: :account_tag_stat
-
-  after_save :save_account_tag_stat
-
   update_index('tags', :self)
-
-  def account_tag_stat
-    super || build_account_tag_stat
-  end
-
-  def cached_sample_accounts
-    Rails.cache.fetch("#{cache_key}/sample_accounts", expires_in: 12.hours) { sample_accounts }
-  end
 
   def to_param
     name
@@ -85,6 +73,10 @@ class Tag < ApplicationRecord
 
   def display_name
     attributes['display_name'] || name
+  end
+
+  def formatted_name
+    "##{display_name}"
   end
 
   def usable
@@ -104,22 +96,6 @@ class Tag < ApplicationRecord
   end
 
   alias trendable? trendable
-
-  def requires_review?
-    reviewed_at.nil?
-  end
-
-  def reviewed?
-    reviewed_at.present?
-  end
-
-  def requested_review?
-    requested_review_at.present?
-  end
-
-  def requires_review_notification?
-    requires_review? && !requested_review?
-  end
 
   def decaying?
     max_score_at && max_score_at >= Trends.tags.options[:max_score_cooldown].ago && max_score_at < 1.day.ago
@@ -145,9 +121,11 @@ class Tag < ApplicationRecord
 
     def search_for(term, limit = 5, offset = 0, options = {})
       stripped_term = term.strip
+      options.reverse_merge!({ exclude_unlistable: true, exclude_unreviewed: false })
 
-      query = Tag.listable.matches_name(stripped_term)
-      query = query.merge(matching_name(stripped_term).or(where.not(reviewed_at: nil))) if options[:exclude_unreviewed]
+      query = Tag.matches_name(stripped_term)
+      query = query.merge(Tag.listable) if options[:exclude_unlistable]
+      query = query.merge(matching_name(stripped_term).or(reviewed)) if options[:exclude_unreviewed]
 
       query.order(Arel.sql('length(name) ASC, name ASC'))
            .limit(limit)
@@ -178,11 +156,6 @@ class Tag < ApplicationRecord
   end
 
   private
-
-  def save_account_tag_stat
-    return unless account_tag_stat&.changed?
-    account_tag_stat.save
-  end
 
   def validate_name_change
     errors.add(:name, I18n.t('tags.does_not_match_previous_name')) unless name_was.mb_chars.casecmp(name.mb_chars).zero?
