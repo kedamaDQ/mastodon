@@ -1,0 +1,8 @@
+$primary-text-color: darken($white, 8%) !default;
+$darker-text-color: lighten($ui-primary-color, 8%) !default;
+$dark-text-color: lighten($ui-base-lighter-color, 12%) !default;
+$highlight-text-color: lighten($ui-highlight-color, 12%) !default;
+
+:root {
+  --background-color: #{darken($ui-base-color, 4%)};
+}
