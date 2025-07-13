@@ -308,24 +308,6 @@ class ComposeForm extends ImmutablePureComponent {
               lang={this.props.lang}
             />
           </div>
-          <div className='fixed-input'>
-            <AutosuggestInput
-              placeholder='#dqxtv #delmulin ...'
-              value={this.props.fixedText}
-              onChange={this.handleChangeFixedText}
-              onKeyDown={this.handleKeyDown}
-              disabled={false}
-              ref={this.setFixedText}
-              suggestions={this.props.suggestions}
-              onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
-              onSuggestionsClearRequested={this.onSuggestionsClearRequested}
-              onSuggestionSelected={this.onFixedSuggestionSelected}
-              searchTokens={['#']}
-              autoFocus={false}
-              id='fixed-input'
-              className={`fixed-input__input`}
-            />
-          </div>
 
           <UploadForm />
           <PollForm />
@@ -344,21 +326,39 @@ class ComposeForm extends ImmutablePureComponent {
                 <EmojiPickerDropdown onPickEmoji={this.handleEmojiPick} />
                 <CharacterCounter max={maxChars} text={this.getFulltextForCharacterCounting()} />
               </div>
+              <div className='compose-form__fixed-input'>
+                <AutosuggestInput
+                  placeholder='#dqxtv #delmulin ...'
+                  value={this.props.fixedText}
+                  onChange={this.handleChangeFixedText}
+                  onKeyDown={this.handleKeyDown}
+                  disabled={false}
+                  ref={this.setFixedText}
+                  suggestions={this.props.suggestions}
+                  onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
+                  onSuggestionsClearRequested={this.onSuggestionsClearRequested}
+                  onSuggestionSelected={this.onFixedSuggestionSelected}
+                  searchTokens={['#']}
+                  id='fixed-input'
+                  className={`fixed-input__input fixed-input__input--${this.props.privacy}`}
+                />
+              </div>
+              <div className='compose-form__submit'>
+                <Button
+                  type='button'
+                  text={eliminateGaps}
+                  disabled={!this.canEliminateGaps()}
+                  onClick={this.handleElimenateGaps}
+                  block
+                />
+                <Button
+                  type='submit'
+                  text={intl.formatMessage(this.props.isEditing ? messages.saveChanges : (this.props.isInReply ? messages.reply : messages.publish))}
+                  disabled={!this.canSubmit()}
+                />
+              </div>
             </div>
           </div>
-        </div>
-        <div className='compose-form__submit'>
-          <Button
-            type='button'
-            text={eliminateGaps}
-            disabled={!this.canEliminateGaps()}
-            onClick={this.handleElimenateGaps}
-          />
-          <Button
-            type='submit'
-            text={intl.formatMessage(this.props.isEditing ? messages.saveChanges : (this.props.isInReply ? messages.reply : messages.publish))}
-            disabled={!this.canSubmit()}
-          />
         </div>
       </form>
     );

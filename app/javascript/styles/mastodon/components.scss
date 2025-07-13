@@ -532,7 +532,7 @@ body > [data-popper-placement] {
 .compose-form {
   display: flex;
   flex-direction: column;
-  gap: 12px 32px;
+  gap: 32px;
 
   .layout-multiple-columns &,
   .column & {
@@ -596,8 +596,8 @@ body > [data-popper-placement] {
     align-items: stretch;
 
     &__border {
-      //      background: url('../images/warning-stripes.svg') repeat-y;
-      width: 0;
+      background: url('../images/warning-stripes.svg') repeat-y;
+      width: 5px;
       flex: 0 0 auto;
 
       &:first-child {
@@ -615,14 +615,9 @@ body > [data-popper-placement] {
     }
   }
 
-  .fixed-input {
-    border: 1px solid var(--background-border-color);
-    border-width: 1px 0;
-  }
-
-  .fixed-input__input,
   .autosuggest-textarea__textarea,
-  .spoiler-input__input {
+  .spoiler-input__input,
+  .fixed-input__input {
     display: block;
     box-sizing: border-box;
     width: 100%;
@@ -641,7 +636,6 @@ body > [data-popper-placement] {
     }
   }
 
-  .fixed-input__input,
   .spoiler-input__input {
     padding: 12px 12px - 5px;
     background: rgba($ui-highlight-color, 0.05);
@@ -770,13 +764,10 @@ body > [data-popper-placement] {
     padding-top: 0;
   }
 
-  &__eliminate-gaps,
   &__submit {
     display: flex;
-    align-items: flex-start;
-    justify-content: flex-end;
+    align-items: center;
     flex: 1 1 auto;
-    gap: 0 12px;
     max-width: 100%;
     overflow: hidden;
   }
@@ -827,6 +818,12 @@ body > [data-popper-placement] {
         background: $ui-highlight-color;
         color: $primary-text-color;
       }
+    }
+
+    .compose-form__eliminate-gaps-button-wrapper {
+      overflow: hidden;
+      padding-top: 15px;
+      margin-right: 5px;
     }
   }
 
@@ -11160,9 +11157,8 @@ noscript {
     display: block;
     position: absolute;
     height: 100%;
-
-    //    background: url('../images/warning-stripes.svg') repeat-y;
-    width: 0;
+    background: url('../images/warning-stripes.svg') repeat-y;
+    width: 5px;
     top: 0;
   }
 
@@ -11180,6 +11176,6 @@ noscript {
 
   &--filter::before,
   &--filter::after {
-    //    background-image: url('../images/filter-stripes.svg');
+    background-image: url('../images/filter-stripes.svg');
   }
 }
