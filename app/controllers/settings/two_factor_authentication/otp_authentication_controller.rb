@@ -15,7 +15,7 @@ module Settings
       end
 
       def create
-        session[:new_otp_secret] = User.generate_otp_secret
+        session[:new_otp_secret] = User.generate_otp_secret(32)
 
         redirect_to new_settings_two_factor_authentication_confirmation_path
       end
