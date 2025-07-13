@@ -7,7 +7,10 @@ RSpec.describe 'Invites' do
 
   let(:user) { Fabricate :user }
 
-  before { sign_in user }
+  before do
+    host! 'localhost:3000' # TODO: Move into before for all system specs?
+    sign_in user
+  end
 
   describe 'Viewing invites' do
     it 'Lists existing user invites' do
