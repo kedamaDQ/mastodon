@@ -10,13 +10,13 @@ RSpec.describe RemoveFromFollowersService do
   describe 'local' do
     let(:sender) { Fabricate(:account, username: 'alice') }
 
-    before { Follow.create(account: sender, target_account: bob) }
+    before do
+      Follow.create(account: sender, target_account: bob)
+      subject.call(bob, sender)
+    end
 
     it 'does not create follow relation' do
-      subject.call(bob, sender)
-
-      expect(bob)
-        .to_not be_followed_by(sender)
+      expect(bob.followed_by?(sender)).to be false
     end
   end
 
@@ -26,16 +26,15 @@ RSpec.describe RemoveFromFollowersService do
     before do
       Follow.create(account: sender, target_account: bob)
       stub_request(:post, sender.inbox_url).to_return(status: 200)
+      subject.call(bob, sender)
     end
 
-    it 'does not create follow relation and sends reject activity', :inline_jobs do
-      subject.call(bob, sender)
+    it 'does not create follow relation' do
+      expect(bob.followed_by?(sender)).to be false
+    end
 
-      expect(bob)
-        .to_not be_followed_by(sender)
-
-      expect(a_request(:post, sender.inbox_url))
-        .to have_been_made.once
+    it 'sends a reject activity', :inline_jobs do
+      expect(a_request(:post, sender.inbox_url)).to have_been_made.once
     end
   end
 end

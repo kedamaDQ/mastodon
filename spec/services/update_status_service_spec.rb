@@ -10,15 +10,15 @@ RSpec.describe UpdateStatusService do
 
     before do
       allow(ActivityPub::DistributionWorker).to receive(:perform_async)
+      subject.call(status, status.account_id, text: 'Foo')
     end
 
-    it 'does not create an edit or notify anyone' do
-      subject.call(status, status.account_id, text: 'Foo')
+    it 'does not create an edit' do
+      expect(status.reload.edits).to be_empty
+    end
 
-      expect(status.reload.edits)
-        .to be_empty
-      expect(ActivityPub::DistributionWorker)
-        .to_not have_received(:perform_async)
+    it 'does not notify anyone' do
+      expect(ActivityPub::DistributionWorker).to_not have_received(:perform_async)
     end
   end
 
@@ -28,16 +28,18 @@ RSpec.describe UpdateStatusService do
 
     before do
       PreviewCardsStatus.create(status: status, preview_card: preview_card)
+      subject.call(status, status.account_id, text: 'Bar')
     end
 
-    it 'updates text, resets card, saves edit history' do
-      subject.call(status, status.account_id, text: 'Bar')
+    it 'updates text' do
+      expect(status.reload.text).to eq 'Bar'
+    end
 
-      expect(status.reload)
-        .to have_attributes(
-          text: 'Bar',
-          preview_card: be_nil
-        )
+    it 'resets preview card' do
+      expect(status.reload.preview_card).to be_nil
+    end
+
+    it 'saves edit history' do
       expect(status.edits.ordered.pluck(:text)).to eq %w(Foo Bar)
     end
   end
@@ -48,15 +50,15 @@ RSpec.describe UpdateStatusService do
 
     before do
       PreviewCardsStatus.create(status: status, preview_card: preview_card)
+      subject.call(status, status.account_id, text: 'Foo', spoiler_text: 'Bar')
     end
 
-    it 'updates content warning and saves history' do
-      subject.call(status, status.account_id, text: 'Foo', spoiler_text: 'Bar')
+    it 'updates content warning' do
+      expect(status.reload.spoiler_text).to eq 'Bar'
+    end
 
-      expect(status.reload.spoiler_text)
-        .to eq 'Bar'
-      expect(status.edits.ordered.pluck(:text, :spoiler_text))
-        .to eq [['Foo', ''], ['Foo', 'Bar']]
+    it 'saves edit history' do
+      expect(status.edits.ordered.pluck(:text, :spoiler_text)).to eq [['Foo', ''], ['Foo', 'Bar']]
     end
   end
 
@@ -67,19 +69,23 @@ RSpec.describe UpdateStatusService do
 
     before do
       status.media_attachments << detached_media_attachment
+      subject.call(status, status.account_id, text: 'Foo', media_ids: [attached_media_attachment.id.to_s])
     end
 
-    it 'updates media attachments, handles attachments, saves history' do
-      subject.call(status, status.account_id, text: 'Foo', media_ids: [attached_media_attachment.id.to_s])
+    it 'updates media attachments' do
+      expect(status.ordered_media_attachments).to eq [attached_media_attachment]
+    end
 
-      expect(status.ordered_media_attachments)
-        .to eq [attached_media_attachment]
-      expect(detached_media_attachment.reload.status_id)
-        .to eq status.id
-      expect(attached_media_attachment.reload.status_id)
-        .to eq status.id
-      expect(status.edits.ordered.pluck(:ordered_media_attachment_ids))
-        .to eq [[detached_media_attachment.id], [attached_media_attachment.id]]
+    it 'does not detach detached media attachments' do
+      expect(detached_media_attachment.reload.status_id).to eq status.id
+    end
+
+    it 'attaches attached media attachments' do
+      expect(attached_media_attachment.reload.status_id).to eq status.id
+    end
+
+    it 'saves edit history' do
+      expect(status.edits.ordered.pluck(:ordered_media_attachment_ids)).to eq [[detached_media_attachment.id], [attached_media_attachment.id]]
     end
   end
 
@@ -89,18 +95,19 @@ RSpec.describe UpdateStatusService do
 
     before do
       status.media_attachments << media_attachment
+      subject.call(status, status.account_id, text: 'Foo', media_ids: [media_attachment.id.to_s], media_attributes: [{ id: media_attachment.id, description: 'New description' }])
     end
 
-    it 'does not detach media attachment, updates description, and saves history' do
-      subject.call(status, status.account_id, text: 'Foo', media_ids: [media_attachment.id.to_s], media_attributes: [{ id: media_attachment.id, description: 'New description' }])
+    it 'does not detach media attachment' do
+      expect(media_attachment.reload.status_id).to eq status.id
+    end
 
-      expect(media_attachment.reload)
-        .to have_attributes(
-          status_id: status.id,
-          description: 'New description'
-        )
-      expect(status.edits.ordered.map { |edit| edit.ordered_media_attachments.map(&:description) })
-        .to eq [['Old description'], ['New description']]
+    it 'updates the media attachment description' do
+      expect(media_attachment.reload.description).to eq 'New description'
+    end
+
+    it 'saves edit history' do
+      expect(status.edits.ordered.map { |edit| edit.ordered_media_attachments.map(&:description) }).to eq [['Old description'], ['New description']]
     end
   end
 
@@ -113,27 +120,28 @@ RSpec.describe UpdateStatusService do
     before do
       status.update(poll: poll)
       VoteService.new.call(voter, poll, [0])
+      subject.call(status, status.account_id, text: 'Foo', poll: { options: %w(Bar Baz Foo), expires_in: 5.days.to_i })
     end
 
-    it 'updates poll, resets votes, saves history, requeues notifications' do
-      subject.call(status, status.account_id, text: 'Foo', poll: { options: %w(Bar Baz Foo), expires_in: 5.days.to_i })
-
+    it 'updates poll' do
       poll = status.poll.reload
+      expect(poll.options).to eq %w(Bar Baz Foo)
+    end
 
-      expect(poll)
-        .to have_attributes(
-          options: %w(Bar Baz Foo),
-          votes_count: 0,
-          cached_tallies: [0, 0, 0]
-        )
-      expect(poll.votes.count)
-        .to eq(0)
+    it 'resets votes' do
+      poll = status.poll.reload
+      expect(poll.votes_count).to eq 0
+      expect(poll.votes.count).to eq 0
+      expect(poll.cached_tallies).to eq [0, 0, 0]
+    end
 
-      expect(status.edits.ordered.pluck(:poll_options))
-        .to eq [%w(Foo Bar), %w(Bar Baz Foo)]
+    it 'saves edit history' do
+      expect(status.edits.ordered.pluck(:poll_options)).to eq [%w(Foo Bar), %w(Bar Baz Foo)]
+    end
 
-      expect(PollExpirationNotifyWorker)
-        .to have_enqueued_sidekiq_job(poll.id).at(poll.expires_at + 5.minutes)
+    it 'requeues expiration notification' do
+      poll = status.poll.reload
+      expect(PollExpirationNotifyWorker).to have_enqueued_sidekiq_job(poll.id).at(poll.expires_at + 5.minutes)
     end
   end
 
@@ -143,13 +151,16 @@ RSpec.describe UpdateStatusService do
     let!(:bob) { Fabricate(:account, username: 'bob') }
     let!(:status) { PostStatusService.new.call(account, text: 'Hello @alice') }
 
-    it 'changes mentions and keeps old as silent' do
+    before do
       subject.call(status, status.account_id, text: 'Hello @bob')
+    end
 
-      expect(status.active_mentions.pluck(:account_id))
-        .to eq [bob.id]
-      expect(status.mentions.pluck(:account_id))
-        .to contain_exactly(alice.id, bob.id)
+    it 'changes mentions' do
+      expect(status.active_mentions.pluck(:account_id)).to eq [bob.id]
+    end
+
+    it 'keeps old mentions as silent mentions' do
+      expect(status.mentions.pluck(:account_id)).to contain_exactly(alice.id, bob.id)
     end
   end
 
@@ -157,9 +168,11 @@ RSpec.describe UpdateStatusService do
     let!(:account) { Fabricate(:account) }
     let!(:status) { PostStatusService.new.call(account, text: 'Hello #foo') }
 
-    it 'changes tags' do
+    before do
       subject.call(status, status.account_id, text: 'Hello #bar')
+    end
 
+    it 'changes tags' do
       expect(status.tags.pluck(:name)).to eq %w(bar)
     end
   end

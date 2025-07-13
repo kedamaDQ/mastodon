@@ -26,16 +26,15 @@ RSpec.describe BlockService do
 
     before do
       stub_request(:post, 'http://example.com/inbox').to_return(status: 200)
+      subject.call(sender, bob)
     end
 
-    it 'creates a blocking relation and send block activity', :inline_jobs do
-      subject.call(sender, bob)
+    it 'creates a blocking relation' do
+      expect(sender.blocking?(bob)).to be true
+    end
 
-      expect(sender)
-        .to be_blocking(bob)
-
-      expect(a_request(:post, 'http://example.com/inbox'))
-        .to have_been_made.once
+    it 'sends a block activity', :inline_jobs do
+      expect(a_request(:post, 'http://example.com/inbox')).to have_been_made.once
     end
   end
 end

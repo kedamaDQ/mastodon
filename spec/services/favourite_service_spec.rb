@@ -11,9 +11,11 @@ RSpec.describe FavouriteService do
     let(:bob)    { Fabricate(:account) }
     let(:status) { Fabricate(:status, account: bob) }
 
-    it 'creates a favourite' do
+    before do
       subject.call(sender, status)
+    end
 
+    it 'creates a favourite' do
       expect(status.favourites.first).to_not be_nil
     end
   end
@@ -24,16 +26,15 @@ RSpec.describe FavouriteService do
 
     before do
       stub_request(:post, 'http://example.com/inbox').to_return(status: 200, body: '', headers: {})
+      subject.call(sender, status)
     end
 
-    it 'creates a favourite and sends like activity', :inline_jobs do
-      subject.call(sender, status)
+    it 'creates a favourite' do
+      expect(status.favourites.first).to_not be_nil
+    end
 
-      expect(status.favourites.first)
-        .to_not be_nil
-
-      expect(a_request(:post, 'http://example.com/inbox'))
-        .to have_been_made.once
+    it 'sends a like activity', :inline_jobs do
+      expect(a_request(:post, 'http://example.com/inbox')).to have_been_made.once
     end
   end
 end

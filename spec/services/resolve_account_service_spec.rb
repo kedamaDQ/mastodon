@@ -22,38 +22,37 @@ RSpec.describe ResolveAccountService do
       context 'when domain is banned' do
         before { Fabricate(:domain_block, domain: 'ap.example.com', severity: :suspend) }
 
-        it 'does not return an account or make a webfinger query' do
-          expect(subject.call('foo@ap.example.com', skip_webfinger: true))
-            .to be_nil
-          expect(webfinger_discovery_request)
-            .to_not have_been_made
+        it 'does not return an account' do
+          expect(subject.call('foo@ap.example.com', skip_webfinger: true)).to be_nil
+        end
+
+        it 'does not make a webfinger query' do
+          subject.call('foo@ap.example.com', skip_webfinger: true)
+          expect(a_request(:get, 'https://ap.example.com/.well-known/webfinger?resource=acct:foo@ap.example.com')).to_not have_been_made
         end
       end
 
       context 'when domain is not banned' do
-        it 'returns the expected account and does not make a webfinger query' do
-          expect(subject.call('foo@ap.example.com', skip_webfinger: true))
-            .to eq remote_account
-          expect(webfinger_discovery_request)
-            .to_not have_been_made
+        it 'returns the expected account' do
+          expect(subject.call('foo@ap.example.com', skip_webfinger: true)).to eq remote_account
+        end
+
+        it 'does not make a webfinger query' do
+          subject.call('foo@ap.example.com', skip_webfinger: true)
+          expect(a_request(:get, 'https://ap.example.com/.well-known/webfinger?resource=acct:foo@ap.example.com')).to_not have_been_made
         end
       end
     end
 
     context 'when account is not known' do
-      it 'does not return an account and does not make webfinger query' do
-        expect(subject.call('foo@ap.example.com', skip_webfinger: true))
-          .to be_nil
-        expect(webfinger_discovery_request)
-          .to_not have_been_made
+      it 'does not return an account' do
+        expect(subject.call('foo@ap.example.com', skip_webfinger: true)).to be_nil
       end
-    end
 
-    def webfinger_discovery_request
-      a_request(
-        :get,
-        'https://ap.example.com/.well-known/webfinger?resource=acct:foo@ap.example.com'
-      )
+      it 'does not make a webfinger query' do
+        subject.call('foo@ap.example.com', skip_webfinger: true)
+        expect(a_request(:get, 'https://ap.example.com/.well-known/webfinger?resource=acct:foo@ap.example.com')).to_not have_been_made
+      end
     end
   end
 
@@ -85,11 +84,13 @@ RSpec.describe ResolveAccountService do
         allow(AccountDeletionWorker).to receive(:perform_async)
       end
 
-      it 'returns nil and queues deletion worker' do
-        expect(subject.call('hoge@example.com'))
-          .to be_nil
-        expect(AccountDeletionWorker)
-          .to have_received(:perform_async)
+      it 'returns nil' do
+        expect(subject.call('hoge@example.com')).to be_nil
+      end
+
+      it 'queues account deletion worker' do
+        subject.call('hoge@example.com')
+        expect(AccountDeletionWorker).to have_received(:perform_async)
       end
     end
 
@@ -109,12 +110,9 @@ RSpec.describe ResolveAccountService do
     it 'returns new remote account' do
       account = subject.call('Foo@redirected.example.com')
 
-      expect(account)
-        .to have_attributes(
-          activitypub?: true,
-          acct: 'foo@ap.example.com',
-          inbox_url: 'https://ap.example.com/users/foo/inbox'
-        )
+      expect(account.activitypub?).to be true
+      expect(account.acct).to eq 'foo@ap.example.com'
+      expect(account.inbox_url).to eq 'https://ap.example.com/users/foo/inbox'
     end
   end
 
@@ -127,12 +125,9 @@ RSpec.describe ResolveAccountService do
     it 'returns new remote account' do
       account = subject.call('Foo@redirected.example.com')
 
-      expect(account)
-        .to have_attributes(
-          activitypub?: true,
-          acct: 'foo@ap.example.com',
-          inbox_url: 'https://ap.example.com/users/foo/inbox'
-        )
+      expect(account.activitypub?).to be true
+      expect(account.acct).to eq 'foo@ap.example.com'
+      expect(account.inbox_url).to eq 'https://ap.example.com/users/foo/inbox'
     end
   end
 
@@ -166,12 +161,9 @@ RSpec.describe ResolveAccountService do
     it 'returns new remote account' do
       account = subject.call('foo@ap.example.com')
 
-      expect(account)
-        .to have_attributes(
-          activitypub?: true,
-          domain: 'ap.example.com',
-          inbox_url: 'https://ap.example.com/users/foo/inbox'
-        )
+      expect(account.activitypub?).to be true
+      expect(account.domain).to eq 'ap.example.com'
+      expect(account.inbox_url).to eq 'https://ap.example.com/users/foo/inbox'
     end
 
     context 'with multiple types' do
@@ -182,13 +174,10 @@ RSpec.describe ResolveAccountService do
       it 'returns new remote account' do
         account = subject.call('foo@ap.example.com')
 
-        expect(account)
-          .to have_attributes(
-            activitypub?: true,
-            domain: 'ap.example.com',
-            inbox_url: 'https://ap.example.com/users/foo/inbox',
-            actor_type: 'Person'
-          )
+        expect(account.activitypub?).to be true
+        expect(account.domain).to eq 'ap.example.com'
+        expect(account.inbox_url).to eq 'https://ap.example.com/users/foo/inbox'
+        expect(account.actor_type).to eq 'Person'
       end
     end
   end
@@ -197,21 +186,20 @@ RSpec.describe ResolveAccountService do
     let!(:duplicate) { Fabricate(:account, username: 'foo', domain: 'old.example.com', uri: 'https://ap.example.com/users/foo') }
     let!(:status)    { Fabricate(:status, account: duplicate, text: 'foo') }
 
-    it 'returns new remote account and merges accounts', :inline_jobs do
+    it 'returns new remote account' do
       account = subject.call('foo@ap.example.com')
 
-      expect(account)
-        .to have_attributes(
-          activitypub?: true,
-          domain: 'ap.example.com',
-          inbox_url: 'https://ap.example.com/users/foo/inbox',
-          uri: 'https://ap.example.com/users/foo'
-        )
+      expect(account.activitypub?).to be true
+      expect(account.domain).to eq 'ap.example.com'
+      expect(account.inbox_url).to eq 'https://ap.example.com/users/foo/inbox'
+      expect(account.uri).to eq 'https://ap.example.com/users/foo'
+    end
 
-      expect(status.reload.account_id)
-        .to eq account.id
-      expect(Account.where(uri: account.uri).count)
-        .to eq 1
+    it 'merges accounts', :inline_jobs do
+      account = subject.call('foo@ap.example.com')
+
+      expect(status.reload.account_id).to eq account.id
+      expect(Account.where(uri: account.uri).count).to eq 1
     end
   end
 
@@ -222,15 +210,11 @@ RSpec.describe ResolveAccountService do
     it 'returns new remote account' do
       account = subject.call('foo@ap.example.com')
 
-      expect(account)
-        .to have_attributes(
-          activitypub?: true,
-          domain: 'ap.example.com',
-          inbox_url: 'https://ap.example.com/users/foo/inbox',
-          uri: 'https://ap.example.com/users/foo'
-        )
-      expect(status.reload.account)
-        .to eq(account)
+      expect(account.activitypub?).to be true
+      expect(account.domain).to eq 'ap.example.com'
+      expect(account.inbox_url).to eq 'https://ap.example.com/users/foo/inbox'
+      expect(account.uri).to eq 'https://ap.example.com/users/foo'
+      expect(status.reload.account).to eq(account)
     end
   end
 

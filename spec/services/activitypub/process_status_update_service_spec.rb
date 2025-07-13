@@ -2,6 +2,10 @@
 
 require 'rails_helper'
 
+def poll_option_json(name, votes)
+  { type: 'Note', name: name, replies: { type: 'Collection', totalItems: votes } }
+end
+
 RSpec.describe ActivityPub::ProcessStatusUpdateService do
   subject { described_class.new }
 
@@ -290,6 +294,7 @@ RSpec.describe ActivityPub::ProcessStatusUpdateService do
     context 'when originally without media attachments' do
       before do
         stub_request(:get, 'https://example.com/foo.png').to_return(body: attachment_fixture('emojo.png'))
+        subject.call(status, json, json)
       end
 
       let(:payload) do
@@ -305,18 +310,19 @@ RSpec.describe ActivityPub::ProcessStatusUpdateService do
         }
       end
 
-      it 'updates media attachments, fetches attachment, records media change in edit' do
-        subject.call(status, json, json)
+      it 'updates media attachments' do
+        media_attachment = status.reload.ordered_media_attachments.first
 
-        expect(status.reload.ordered_media_attachments.first)
-          .to be_present
-          .and(have_attributes(remote_url: 'https://example.com/foo.png'))
+        expect(media_attachment).to_not be_nil
+        expect(media_attachment.remote_url).to eq 'https://example.com/foo.png'
+      end
 
-        expect(a_request(:get, 'https://example.com/foo.png'))
-          .to have_been_made
+      it 'fetches the attachment' do
+        expect(a_request(:get, 'https://example.com/foo.png')).to have_been_made
+      end
 
-        expect(status.edits.reload.last.ordered_media_attachment_ids)
-          .to_not be_empty
+      it 'records media change in edit' do
+        expect(status.edits.reload.last.ordered_media_attachment_ids).to_not be_empty
       end
     end
 
@@ -338,26 +344,27 @@ RSpec.describe ActivityPub::ProcessStatusUpdateService do
 
       before do
         allow(RedownloadMediaWorker).to receive(:perform_async)
+        subject.call(status, json, json)
       end
 
-      it 'updates the existing media attachment in-place, does not queue redownload, updates media, records media change' do
-        subject.call(status, json, json)
+      it 'updates the existing media attachment in-place' do
+        media_attachment = status.media_attachments.ordered.reload.first
 
-        expect(status.media_attachments.ordered.reload.first)
-          .to be_present
-          .and have_attributes(
-            remote_url: 'https://example.com/foo.png',
-            description: 'A picture'
-          )
+        expect(media_attachment).to_not be_nil
+        expect(media_attachment.remote_url).to eq 'https://example.com/foo.png'
+        expect(media_attachment.description).to eq 'A picture'
+      end
 
-        expect(RedownloadMediaWorker)
-          .to_not have_received(:perform_async)
+      it 'does not queue redownload for the existing media attachment' do
+        expect(RedownloadMediaWorker).to_not have_received(:perform_async)
+      end
 
-        expect(status.ordered_media_attachments.map(&:remote_url))
-          .to eq %w(https://example.com/foo.png)
+      it 'updates media attachments' do
+        expect(status.ordered_media_attachments.map(&:remote_url)).to eq %w(https://example.com/foo.png)
+      end
 
-        expect(status.edits.reload.last.ordered_media_attachment_ids)
-          .to_not be_empty
+      it 'records media change in edit' do
+        expect(status.edits.reload.last.ordered_media_attachment_ids).to_not be_empty
       end
     end
 
@@ -365,11 +372,10 @@ RSpec.describe ActivityPub::ProcessStatusUpdateService do
       before do
         poll = Fabricate(:poll, status: status)
         status.update(preloadable_poll: poll)
+        subject.call(status, json, json)
       end
 
       it 'removes poll and records media change in edit' do
-        subject.call(status, json, json)
-
         expect(status.reload.poll).to be_nil
         expect(status.edits.reload.last.poll_options).to be_nil
       end
@@ -392,13 +398,15 @@ RSpec.describe ActivityPub::ProcessStatusUpdateService do
         }
       end
 
-      it 'creates a poll and records media change in edit' do
+      before do
         subject.call(status, json, json)
+      end
 
-        expect(status.reload.poll)
-          .to be_present
-          .and have_attributes(options: %w(Foo Bar Baz))
+      it 'creates a poll and records media change in edit' do
+        poll = status.reload.poll
 
+        expect(poll).to_not be_nil
+        expect(poll.options).to eq %w(Foo Bar Baz)
         expect(status.edits.reload.last.poll_options).to eq %w(Foo Bar Baz)
       end
     end
@@ -410,9 +418,5 @@ RSpec.describe ActivityPub::ProcessStatusUpdateService do
       expect(status.reload.edited_at.to_s)
         .to eq '2021-09-08 22:39:25 UTC'
     end
-  end
-
-  def poll_option_json(name, votes)
-    { type: 'Note', name: name, replies: { type: 'Collection', totalItems: votes } }
   end
 end

@@ -12,32 +12,26 @@ RSpec.describe UnblockDomainService do
     let!(:silenced) { Fabricate(:account, domain: 'example.com', silenced_at: domain_block.created_at) }
     let!(:suspended) { Fabricate(:account, domain: 'example.com', suspended_at: domain_block.created_at) }
 
-    context 'with severity of silence' do
-      before { domain_block.update(severity: :silence) }
+    it 'unsilences accounts and removes block' do
+      domain_block.update(severity: :silence)
 
-      it 'unsilences accounts and removes block' do
-        subject.call(domain_block)
-
-        expect_deleted_domain_block
-        expect(silenced.reload.silenced?).to be false
-        expect(suspended.reload.suspended?).to be true
-        expect(independently_suspended.reload.suspended?).to be true
-        expect(independently_silenced.reload.silenced?).to be true
-      end
+      subject.call(domain_block)
+      expect_deleted_domain_block
+      expect(silenced.reload.silenced?).to be false
+      expect(suspended.reload.suspended?).to be true
+      expect(independently_suspended.reload.suspended?).to be true
+      expect(independently_silenced.reload.silenced?).to be true
     end
 
-    context 'with severity of suspend' do
-      before { domain_block.update(severity: :suspend) }
+    it 'unsuspends accounts and removes block' do
+      domain_block.update(severity: :suspend)
 
-      it 'unsuspends accounts and removes block' do
-        subject.call(domain_block)
-
-        expect_deleted_domain_block
-        expect(suspended.reload.suspended?).to be false
-        expect(silenced.reload.silenced?).to be false
-        expect(independently_suspended.reload.suspended?).to be true
-        expect(independently_silenced.reload.silenced?).to be true
-      end
+      subject.call(domain_block)
+      expect_deleted_domain_block
+      expect(suspended.reload.suspended?).to be false
+      expect(silenced.reload.silenced?).to be false
+      expect(independently_suspended.reload.suspended?).to be true
+      expect(independently_silenced.reload.silenced?).to be true
     end
   end
 

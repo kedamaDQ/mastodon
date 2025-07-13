@@ -143,16 +143,15 @@ RSpec.describe FollowService do
 
     before do
       stub_request(:post, 'http://example.com/inbox').to_return(status: 200, body: '', headers: {})
+      subject.call(sender, bob)
     end
 
-    it 'creates follow request and sends an activity to inbox', :inline_jobs do
-      subject.call(sender, bob)
+    it 'creates follow request' do
+      expect(FollowRequest.find_by(account: sender, target_account: bob)).to_not be_nil
+    end
 
-      expect(FollowRequest.find_by(account: sender, target_account: bob))
-        .to_not be_nil
-
-      expect(a_request(:post, 'http://example.com/inbox'))
-        .to have_been_made.once
+    it 'sends a follow activity to the inbox', :inline_jobs do
+      expect(a_request(:post, 'http://example.com/inbox')).to have_been_made.once
     end
   end
 end
