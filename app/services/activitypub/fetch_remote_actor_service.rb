@@ -3,6 +3,7 @@
 class ActivityPub::FetchRemoteActorService < BaseService
   include JsonLdHelper
   include DomainControlHelper
+  include WebfingerHelper
 
   class Error < StandardError; end
 
@@ -44,7 +45,7 @@ class ActivityPub::FetchRemoteActorService < BaseService
   private
 
   def check_webfinger!
-    webfinger = Webfinger.new("acct:#{@username}@#{@domain}").perform
+    webfinger                            = webfinger!("acct:#{@username}@#{@domain}")
     confirmed_username, confirmed_domain = split_acct(webfinger.subject)
 
     if @username.casecmp(confirmed_username).zero? && @domain.casecmp(confirmed_domain).zero?
@@ -53,7 +54,7 @@ class ActivityPub::FetchRemoteActorService < BaseService
       return
     end
 
-    webfinger = Webfinger.new("acct:#{confirmed_username}@#{confirmed_domain}").perform
+    webfinger                            = webfinger!("acct:#{confirmed_username}@#{confirmed_domain}")
     @username, @domain                   = split_acct(webfinger.subject)
 
     raise Webfinger::RedirectError, "Too many webfinger redirects for URI #{@uri} (stopped at #{@username}@#{@domain})" unless confirmed_username.casecmp(@username).zero? && confirmed_domain.casecmp(@domain).zero?
