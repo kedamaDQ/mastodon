@@ -2,7 +2,7 @@
 
 class CreateConversationMutes < ActiveRecord::Migration[5.0]
   def change
-    create_table :conversation_mutes do |t| # rubocop:disable Rails/CreateTableWithTimestamps
+    create_table :conversation_mutes do |t|
       t.integer :account_id, null: false
       t.bigint :conversation_id, null: false
     end
