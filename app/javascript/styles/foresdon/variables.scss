@@ -2,25 +2,31 @@
 $black: #000000;
 $white: #ffffff;
 
-$classic-base-color: hsl(240deg, 16%, 19%);
-$classic-primary-color: hsl(240deg, 29%, 70%);
-$classic-secondary-color: hsl(255deg, 25%, 88%);
-$classic-highlight-color: hsl(240deg, 100%, 69%);
+$classic-base-color: #282c37;
+$classic-primary-color: #9baec8;
+$classic-secondary-color: #d9e1e8;
+$classic-highlight-color: #6364ff;
 
-$blurple-600: hsl(252deg, 59%, 51%); // Iris
-$blurple-500: hsl(240deg, 100%, 69%); // Brand purple
-$blurple-300: hsl(237deg, 92%, 75%); // Faded Blue
-$grey-600: hsl(240deg, 8%, 33%); // Trout
-$grey-100: hsl(240deg, 51%, 90%); // Topaz
+$ui-base-color: rgba($classic-base-color, 0.8);
+$ui-base-color-overwrap: rgba($classic-base-color, 0.6);
+$ui-base-color-darken: rgba($classic-base-color, 0.9);
+$ui-highlight-color-transparent: rgba($classic-highlight-color, 0.6);
 
-$ui-base-color: $classic-base-color;
+$ui-column-header-color: $classic-base-color;
 
-// basis
-$foresdon-background-color: rgba(darken($ui-base-color, 4%), 0.82);
-$foresdon-background-dark-color: rgba($ui-base-color, 0.9);
-$foresdon-background-light-color: rgba($ui-base-color, 0.7);
-$foresdon-background-lighter-color: rgba($ui-base-color, 0.3);
-$foresdon-border-radius: 6px;
-$foresdon-border-radius-top: $foresdon-border-radius $foresdon-border-radius 0 0;
-$foresdon-border-radius-bottom: 0 0 $foresdon-border-radius
-  $foresdon-border-radius;
+/*
+ * transmittance of $ui-base-color = 0.2 (opacity = 0.8)
+ * the column-header has two overwrapping $ui-base-colors.
+ * transmittance of two overwrapping $ui-base-colors is 0.2 * 0.2 = 0.04
+ * as the opacity, 0.96(96%)
+ */
+$ui-header-color: darken(rgba($classic-base-color, 0.96), 6%);
+
+$inverted-text-color: $classic-primary-color;
+
+$foresdon-primary-border-radius: 8px;
+$foresdon-primary-ui-alpha: 0.75;
+$foresdon-margin-right: 2px;
+$foresdon-margin-bottom: 3px;
+$foresdon-ui-accent-overlay: rgba(16, 0, 8, 20%);
+$foresdon-ui-marker-color: #ca8f04;

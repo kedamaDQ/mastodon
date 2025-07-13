@@ -63,11 +63,11 @@ $ui-button-icon-focus-outline: $ui-button-focus-outline !default;
 $ui-button-icon-hover-background-color: rgba(140, 141, 255, 40%) !default;
 
 // Variables for texts
-$primary-text-color: darken($white, 8%) !default;
-$darker-text-color: lighten($ui-primary-color, 8%) !default;
-$dark-text-color: lighten($ui-base-lighter-color, 12%) !default;
+$primary-text-color: $white !default;
+$darker-text-color: $ui-primary-color !default;
+$dark-text-color: $ui-base-lighter-color !default;
 $secondary-text-color: $ui-secondary-color !default;
-$highlight-text-color: lighten($ui-highlight-color, 12%) !default;
+$highlight-text-color: lighten($ui-highlight-color, 8%) !default;
 $action-button-color: $ui-base-lighter-color !default;
 $action-button-focus-color: lighten($ui-base-lighter-color, 4%) !default;
 $passive-text-color: $gold-star !default;
@@ -96,15 +96,15 @@ $font-monospace: 'mastodon-font-monospace' !default;
 
 :root {
   --dropdown-border-color: #{lighten($ui-base-color, 4%)};
-  --dropdown-background-color: #{rgba(darken($ui-base-color, 4%), 0.6)};
+  --dropdown-background-color: #{rgba(darken($ui-base-color, 8%), 0.9)};
   --dropdown-shadow: 0 20px 25px -5px #{rgba($base-shadow-color, 0.25)},
     0 8px 10px -6px #{rgba($base-shadow-color, 0.25)};
-  --modal-background-color: #{rgba(darken($ui-base-color, 4%), 0.6)};
+  --modal-background-color: #{rgba(darken($ui-base-color, 8%), 0.7)};
   --modal-background-variant-color: #{rgba($ui-base-color, 0.7)};
   --modal-border-color: #{lighten($ui-base-color, 4%)};
   --background-border-color: #{lighten($ui-base-color, 4%)};
   --background-filter: blur(10px) saturate(180%) contrast(75%) brightness(70%);
-  --background-color: #{darken($ui-base-color, 4%)};
+  --background-color: #{darken($ui-base-color, 8%)};
   --background-color-tint: #{rgba(darken($ui-base-color, 8%), 0.9)};
   --surface-background-color: #{darken($ui-base-color, 4%)};
   --surface-variant-background-color: #{$ui-base-color};

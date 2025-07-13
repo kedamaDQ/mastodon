@@ -1,8 +1,9 @@
 html {
-  scrollbar-color: $foresdon-background-color transparent;
+  scrollbar-color: $ui-base-color transparent;
 }
 
-body {
+body,
+body.admin {
   background: url($foresdon-background-image) no-repeat fixed bottom center;
   background-size: cover;
 
@@ -13,163 +14,440 @@ body {
   @media screen and (width <= calc($no-gap-breakpoint - 285px - 1px)) {
     background-position: 38% 80%;
   }
-
-  .admin {
-    background: var(--background-color);
-  }
 }
 
-.admin-wrapper {
-  background: var(--background-color);
-}
-
-.column > .scrollable {
-  background: $foresdon-background-color;
-  border: none;
-  border-radius: $foresdon-border-radius-bottom;
-}
-
-.error-column {
-  background: $foresdon-background-color;
-  border: none;
-  border-radius: $foresdon-border-radius;
-}
-
-.drawer__header,
-.column-header__wrapper,
-.column-back-button {
-  background: $foresdon-background-dark-color;
-  border-radius: $foresdon-border-radius-top;
+.layout-single-column .ui__header {
+  background-color: $ui-column-header-color;
   border: none;
 }
 
-.column-subheading {
-  background: $foresdon-background-light-color;
-}
+/* advanced web interface */
+.drawer {
+  &__header {
+    background-color: transparent;
 
-.search__input,
-.drawer__inner {
-  background: $foresdon-background-color;
-}
+    a {
+      background-color: $ui-column-header-color;
+      transition: background 100ms ease-in;
 
-.drawer__inner__mastodon {
-  background: transparent
-    url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 234.80078 31.757813" width="234.80078" height="31.757812"><path d="M19.599609 0c-1.05 0-2.10039.375-2.90039 1.125L0 16.925781v14.832031h234.80078V17.025391l-16.5-15.900391c-1.6-1.5-4.20078-1.5-5.80078 0l-13.80078 13.099609c-1.6 1.5-4.19883 1.5-5.79883 0L179.09961 1.125c-1.6-1.5-4.19883-1.5-5.79883 0L159.5 14.224609c-1.6 1.5-4.20078 1.5-5.80078 0L139.90039 1.125c-1.6-1.5-4.20078-1.5-5.80078 0l-13.79883 13.099609c-1.6 1.5-4.20078 1.5-5.80078 0L100.69922 1.125c-1.600001-1.5-4.198829-1.5-5.798829 0l-13.59961 13.099609c-1.6 1.5-4.200781 1.5-5.800781 0L61.699219 1.125c-1.6-1.5-4.198828-1.5-5.798828 0L42.099609 14.224609c-1.6 1.5-4.198828 1.5-5.798828 0L22.5 1.125C21.7.375 20.649609 0 19.599609 0z" fill="#{hex-color(darken($ui-base-color, 4%))}"/></svg>')
-    no-repeat bottom / 100% auto;
-  border-radius: $foresdon-border-radius-bottom;
-}
-
-.compose-form {
-  &__highlightable {
-    background: $foresdon-background-light-color;
-  }
-}
-
-.autosuggest-textarea {
-  &__suggestions {
-    background: $foresdon-background-light-color;
-    backdrop-filter: var(--background-filter);
+      &:hover {
+        background: lighten($ui-base-color, 3%);
+        transition: background 200ms ease-out;
+      }
+    }
   }
 
-  &__item {
-    background: none;
+  &__inner {
+    border-radius: 4px 4px 0 0;
+  }
+
+  &__tab {
+    &:first-child {
+      border-radius: 4px 0 0 4px;
+    }
 
     &:last-child {
-      border-radius: $foresdon-border-radius-bottom;
+      border-radius: 0 4px 4px 0;
+    }
+  }
+
+  &__inner {
+    background-color: $ui-base-color;
+
+    &__mastodon {
+      background-color: transparent;
     }
   }
 }
 
-.poll__option input[type='text'] {
-  background: none;
+.compose-form {
+  .compose-form__warning {
+    color: $classic-base-color;
+  }
+
+  .reply-indicator {
+    color: $classic-base-color;
+
+    &__display-name,
+    &__content {
+      color: $classic-base-color;
+    }
+  }
+
+  .spoiler-input__input,
+  .autosuggest-textarea__textarea,
+  .fixed-input__input {
+    color: $classic-base-color;
+  }
+
+  &__poll-wrapper {
+    .button.button-secondary,
+    input[type='text'],
+    select {
+      color: $classic-base-color;
+    }
+  }
+
+  .autosuggest-textarea__suggestions {
+    color: $classic-base-color;
+  }
+}
+
+.emoji-mart {
+  color: $classic-base-color;
+}
+
+.emoji-mart-search input {
+  color: $classic-base-color;
+}
+
+.language-dropdown__dropdown__results__item {
+  color: $classic-base-color;
+}
+
+.search-results {
+  background-color: $ui-base-color;
+
+  &__section h5 {
+    background-color: $ui-base-color-overwrap;
+  }
+}
+
+.column-header {
+  background-color: $ui-column-header-color;
+
+  &__button,
+  &__back-button {
+    background-color: transparent;
+  }
+}
+
+.moved-account-banner,
+.follow-request-banner {
+  background-color: transparent;
 }
 
 .notification__filter-bar,
 .account__section-headline {
-  background: $foresdon-background-light-color;
+  background-color: transparent;
   border: none;
-}
 
-.account {
-  &__domain-pill {
-    background: $foresdon-background-lighter-color;
-  }
-}
+  & a,
+  & button {
+    flex: 2 1 auto;
+    padding: 15px 5px 0;
+    background-color: $ui-base-color-overwrap;
 
-.column-inline-form {
-  background: $foresdon-background-color;
-  border: 0 0 1px 0;
-}
+    &.active {
+      background-color: $ui-base-color;
 
-.setting-text {
-  background: $foresdon-background-lighter-color;
-}
+      &::before {
+        display: none;
+      }
 
-.search__popout {
-  background: $foresdon-background-light-color;
-  backdrop-filter: var(--background-filter);
-  border-radius: $foresdon-border-radius-bottom;
-}
+      &::after {
+        display: block;
+        margin: 0;
+        padding: 0;
+        text-align: center;
+        font-size: 8px;
+        height: auto;
+        transform: none;
+        color: $classic-highlight-color;
+        content: '●';
+        border: none;
+      }
 
-.search-results {
-  background: $foresdon-background-lighter-color;
-  backdrop-filter: var(--background-filter);
-
-  &__section__header {
-    background: $foresdon-background-light-color;
-  }
-}
-
-.hashtag-bar > a {
-  background: $foresdon-background-light-color;
-}
-
-.list-editor {
-  background: $foresdon-background-color;
-}
-
-.follow_requests-unlocked_explanation {
-  background: $foresdon-background-lighter-color;
-}
-
-// single column
-.layout-single-column .ui__header {
-  background: none;
-  border: none;
-}
-
-.columns-area__panels {
-  gap: 8px;
-
-  &__pane__inner {
-    background: $foresdon-background-color;
-
-    & .navigation-panel {
-      border: none;
+      &::after {
+        bottom: 0;
+        border: none;
+      }
     }
   }
 }
 
-.compose-panel {
-  width: auto;
-  padding: 10px;
+.notification__filter-bar {
+  & a,
+  & button {
+    &.active {
+      background-color: $ui-base-color;
+    }
+  }
+}
+
+.account__section-headline {
+  & a,
+  & button {
+    &.active {
+      background-color: transparent;
+    }
+  }
+}
+
+.account--panel {
+  background-color: transparent;
+}
+
+div[aria-label='Explore'] > .scrollable {
+  background-color: transparent;
+
+  .empty-column-indicator {
+    background-color: $ui-base-color;
+  }
+
+  .explore__suggestions {
+    background-color: $ui-base-color;
+
+    .empty-column-indicator {
+      background-color: transparent;
+    }
+  }
+
+  .account__section-headline {
+    & a,
+    & button {
+      background-color: $ui-base-color-overwrap;
+
+      &.active {
+        background-color: $ui-base-color;
+      }
+    }
+  }
+}
+
+.getting-started {
+  background-color: transparent;
+
+  &__wrapper {
+    background-color: transparent;
+  }
+
+  .column-subheading {
+    background-color: $ui-base-color-overwrap;
+  }
+
+  .column-link {
+    background-color: transparent;
+
+    &:hover,
+    &:focus,
+    &:active {
+      background-color: $ui-base-color-overwrap;
+    }
+  }
+}
+
+.column-back-button {
+  background-color: $ui-column-header-color;
+}
+
+.account-timeline__header {
+  .account__header {
+    background-color: transparent;
+  }
+
+  .account__header__fields {
+    background-color: $ui-base-color-overwrap;
+  }
+}
+
+.column-inline-form {
+  & label {
+    & input {
+      color: $classic-base-color;
+    }
+  }
+}
+
+.empty-column-indicator,
+.follow_requests-unlocked_explanation {
+  background-color: transparent;
+}
+
+.dropdown-menu {
+  background-color: $ui-base-color-darken;
+
+  &__item {
+    color: $classic-primary-color;
+
+    a,
+    button {
+      background-color: transparent;
+
+      &:focus,
+      &:hover,
+      &:active {
+        color: $classic-secondary-color;
+        background-color: $ui-base-color-overwrap;
+      }
+    }
+  }
+}
+
+.scrollable .account-card {
+  background-color: $ui-base-color-overwrap;
+
+  &__permalink {
+    background-color: transparent;
+  }
+
+  &__header {
+    background-color: transparent;
+  }
+
+  &__bio::after {
+    background: none;
+  }
+}
+
+/* single column web interface */
+.columns-area__panels__pane__inner {
+  background-color: $ui-base-color;
+
+  @media screen and (width <= calc($no-gap-breakpoint - 1px)) {
+    background-color: transparent;
+  }
 }
 
 .tabs-bar__wrapper {
-  background: none;
-  backdrop-filter: none;
+  padding-top: 0;
 }
 
-.explore {
-  &__search-header {
-    background: $foresdon-background-color;
+.compose-panel,
+.navigation-panel {
+  margin-top: 0;
+}
+
+.columns-area__panels__pane--navigational {
+  .navigation-panel {
+    @media screen and (width <= calc($no-gap-breakpoint - 1px)) {
+      background-color: $ui-header-color;
+      border-left: 0;
+    }
+  }
+}
+
+.explore__search-results {
+  background-color: $ui-base-color;
+}
+
+div[aria-label='Explore'] {
+  .explore__search-results {
+    .empty-column-indicator {
+      background-color: transparent;
+    }
+  }
+}
+
+/* modals */
+.modal-root__modal {
+  background-color: $ui-base-color;
+}
+
+.boost-modal,
+.confirmation-modal,
+.report-modal,
+.actions-modal,
+.mute-modal,
+.block-modal,
+.compare-history-modal {
+  background: $ui-base-color-darken;
+}
+
+.boost-modal,
+.confirmation-modal,
+.mute-modal,
+.block-modal {
+  &__action-bar {
+    background-color: $ui-base-color-overwrap;
+  }
+}
+
+.embed-modal {
+  .embed-modal__container {
+    .embed-modal__html {
+      border: solid 1px $inverted-text-color;
+    }
+  }
+}
+
+.list-editor {
+  background-color: transparent;
+
+  &__search {
+    background-color: $ui-base-color-overwrap;
+
+    .search_input {
+      color: $classic-base-color;
+    }
   }
 
-  &__search-results {
-    background: $foresdon-background-color;
+  .drawer__backdrop {
+    background-color: transparent;
   }
 
-  & .search__input {
-    background: $foresdon-background-light-color;
+  .backdrop {
+    background-color: $ui-base-color;
+  }
+}
+
+.report-dialog-modal {
+  .emoji-mart-search {
+    border-radius: 4px 4px 0 0;
+
+    input {
+      background-color: $white;
+    }
+  }
+
+  .emoji-mart-scroll {
+    padding: 0 10px 10px;
+    border-radius: 0 0 4px 4px;
+  }
+}
+
+.setting-text {
+  color: $classic-base-color;
+}
+
+/* preferences */
+.admin-wrapper {
+  .sidebar {
+    ul a {
+      background-color: $ui-base-color-overwrap;
+
+      & .selected .simple-navigation-active-leaf {
+        background-color: $ui-highlight-color-transparent;
+      }
+    }
+  }
+}
+
+.batch-table {
+  &__toolbar {
+    background-color: $ui-base-color-darken;
+  }
+
+  &__row {
+    background-color: $ui-base-color;
+  }
+}
+
+.table {
+  &.inline-table {
+    & > thead > tr {
+      & > td,
+      & > th {
+        background-color: $ui-base-color-darken;
+      }
+    }
+
+    & > tbody > tr {
+      background-color: $ui-base-color-overwrap;
+
+      &:nth-child(odd) {
+        background-color: $ui-base-color;
+      }
+    }
   }
 }
