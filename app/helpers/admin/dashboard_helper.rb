@@ -18,11 +18,6 @@ module Admin::DashboardHelper
     end
   end
 
-  def date_range(range)
-    [l(range.first), l(range.last)]
-      .join(' - ')
-  end
-
   def relevant_account_timestamp(account)
     timestamp, exact = if account.user_current_sign_in_at && account.user_current_sign_in_at < 24.hours.ago
                          [account.user_current_sign_in_at, true]
