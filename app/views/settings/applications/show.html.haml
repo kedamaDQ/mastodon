@@ -15,11 +15,10 @@
         %td
           %code= @application.secret
       %tr
-        %th= t('applications.your_token')
+        %th{ rowspan: 2 }= t('applications.your_token')
         %td
           %code= current_user.token_for_app(@application).token
       %tr
-        %th
         %td= table_link_to 'refresh', t('applications.regenerate_token'), regenerate_settings_application_path(@application), method: :post
 
 %hr/
