@@ -1,6 +1,12 @@
 # frozen_string_literal: true
 
 module ApplicationHelper
+  DANGEROUS_SCOPES = %w(
+    read
+    write
+    follow
+  ).freeze
+
   RTL_LOCALES = %i(
     ar
     ckb
@@ -89,11 +95,8 @@ module ApplicationHelper
     Rails.env.production? ? site_title : "#{site_title} (Dev)"
   end
 
-  def label_for_scope(scope)
-    safe_join [
-      tag.samp(scope, class: { 'scope-danger' => SessionActivation::DEFAULT_SCOPES.include?(scope.to_s) }),
-      tag.span(t("doorkeeper.scopes.#{scope}"), class: :hint),
-    ]
+  def class_for_scope(scope)
+    'scope-danger' if DANGEROUS_SCOPES.include?(scope.to_s)
   end
 
   def can?(action, record)

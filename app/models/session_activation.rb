@@ -28,8 +28,6 @@ class SessionActivation < ApplicationRecord
 
   before_create :assign_access_token
 
-  DEFAULT_SCOPES = %w(read write follow).freeze
-
   class << self
     def active?(id)
       id && exists?(session_id: id)
@@ -66,7 +64,7 @@ class SessionActivation < ApplicationRecord
     {
       application_id: Doorkeeper::Application.find_by(superapp: true)&.id,
       resource_owner_id: user_id,
-      scopes: DEFAULT_SCOPES.join(' '),
+      scopes: 'read write follow',
       expires_in: Doorkeeper.configuration.access_token_expires_in,
       use_refresh_token: Doorkeeper.configuration.refresh_token_enabled?,
     }
