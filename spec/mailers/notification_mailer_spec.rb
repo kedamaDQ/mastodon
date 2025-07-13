@@ -14,6 +14,17 @@ RSpec.describe NotificationMailer do
     end
   end
 
+  shared_examples 'delivery without status' do
+    context 'when notification target_status is missing' do
+      before { allow(notification).to receive(:target_status).and_return(nil) }
+
+      it 'does not deliver mail' do
+        emails = capture_emails { mail.deliver_now }
+        expect(emails).to be_empty
+      end
+    end
+  end
+
   let(:receiver)       { Fabricate(:user, account_attributes: { username: 'alice' }) }
   let(:sender)         { Fabricate(:account, username: 'bob') }
   let(:foreign_status) { Fabricate(:status, account: sender, text: 'The body of the foreign status') }
@@ -24,7 +35,7 @@ RSpec.describe NotificationMailer do
     let(:notification) { Notification.create!(account: receiver.account, activity: mention) }
     let(:mail) { prepared_mailer_for(receiver.account).mention }
 
-    include_examples 'localized subject', 'notification_mailer.mention.subject', name: 'bob'
+    it_behaves_like 'localized subject', 'notification_mailer.mention.subject', name: 'bob'
 
     it 'renders the email' do
       expect(mail)
@@ -36,7 +47,8 @@ RSpec.describe NotificationMailer do
         .and have_standard_headers('mention').for(receiver)
     end
 
-    include_examples 'delivery to non functional user'
+    it_behaves_like 'delivery to non functional user'
+    it_behaves_like 'delivery without status'
   end
 
   describe 'follow' do
@@ -44,7 +56,7 @@ RSpec.describe NotificationMailer do
     let(:notification) { Notification.create!(account: receiver.account, activity: follow) }
     let(:mail) { prepared_mailer_for(receiver.account).follow }
 
-    include_examples 'localized subject', 'notification_mailer.follow.subject', name: 'bob'
+    it_behaves_like 'localized subject', 'notification_mailer.follow.subject', name: 'bob'
 
     it 'renders the email' do
       expect(mail)
@@ -54,7 +66,7 @@ RSpec.describe NotificationMailer do
         .and have_standard_headers('follow').for(receiver)
     end
 
-    include_examples 'delivery to non functional user'
+    it_behaves_like 'delivery to non functional user'
   end
 
   describe 'favourite' do
@@ -62,7 +74,7 @@ RSpec.describe NotificationMailer do
     let(:notification) { Notification.create!(account: receiver.account, activity: favourite) }
     let(:mail) { prepared_mailer_for(own_status.account).favourite }
 
-    include_examples 'localized subject', 'notification_mailer.favourite.subject', name: 'bob'
+    it_behaves_like 'localized subject', 'notification_mailer.favourite.subject', name: 'bob'
 
     it 'renders the email' do
       expect(mail)
@@ -74,7 +86,8 @@ RSpec.describe NotificationMailer do
         .and have_standard_headers('favourite').for(receiver)
     end
 
-    include_examples 'delivery to non functional user'
+    it_behaves_like 'delivery to non functional user'
+    it_behaves_like 'delivery without status'
   end
 
   describe 'reblog' do
@@ -82,7 +95,7 @@ RSpec.describe NotificationMailer do
     let(:notification) { Notification.create!(account: receiver.account, activity: reblog) }
     let(:mail) { prepared_mailer_for(own_status.account).reblog }
 
-    include_examples 'localized subject', 'notification_mailer.reblog.subject', name: 'bob'
+    it_behaves_like 'localized subject', 'notification_mailer.reblog.subject', name: 'bob'
 
     it 'renders the email' do
       expect(mail)
@@ -94,7 +107,8 @@ RSpec.describe NotificationMailer do
         .and have_standard_headers('reblog').for(receiver)
     end
 
-    include_examples 'delivery to non functional user'
+    it_behaves_like 'delivery to non functional user'
+    it_behaves_like 'delivery without status'
   end
 
   describe 'follow_request' do
@@ -102,7 +116,7 @@ RSpec.describe NotificationMailer do
     let(:notification) { Notification.create!(account: receiver.account, activity: follow_request) }
     let(:mail) { prepared_mailer_for(receiver.account).follow_request }
 
-    include_examples 'localized subject', 'notification_mailer.follow_request.subject', name: 'bob'
+    it_behaves_like 'localized subject', 'notification_mailer.follow_request.subject', name: 'bob'
 
     it 'renders the email' do
       expect(mail)
@@ -112,7 +126,7 @@ RSpec.describe NotificationMailer do
         .and have_standard_headers('follow_request').for(receiver)
     end
 
-    include_examples 'delivery to non functional user'
+    it_behaves_like 'delivery to non functional user'
   end
 
   private
