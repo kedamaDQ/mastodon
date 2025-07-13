@@ -37,7 +37,8 @@ export const synchronouslySubmitMarkers = createAppAsyncThunk(
       });
 
       return;
-    } else if ('sendBeacon' in navigator) {
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    } else if ('navigator' && 'sendBeacon' in navigator) {
       // Failing that, we can use sendBeacon, but we have to encode the data as
       // FormData for DoorKeeper to recognize the token.
       const formData = new FormData();
