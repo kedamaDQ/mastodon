@@ -1002,8 +1002,7 @@ body > [data-popper-placement] {
   vertical-align: middle;
   object-fit: contain;
   margin: -0.2ex 0.15em 0.2ex;
-  min-width: 16px;
-  max-width: 100%;
+  width: 16px;
   height: 16px;
 
   img {
@@ -1045,8 +1044,7 @@ body > [data-popper-placement] {
   }
 
   .emojione {
-    min-width: 20px;
-    max-width: 100%;
+    width: 20px;
     height: 20px;
     margin: -3px 0 0;
   }
@@ -1739,8 +1737,7 @@ body > [data-popper-placement] {
     line-height: 24px;
 
     .emojione {
-      min-width: 24px;
-      max-width: 100%;
+      width: 24px;
       height: 24px;
       margin: -1px 0 0;
     }
