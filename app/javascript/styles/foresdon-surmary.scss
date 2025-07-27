@@ -1,5 +1,6 @@
-$foresdon-background-image: 'foresdon/foresdon-surmary.png';
-
-@import 'foresdon/variables';
-@import 'application';
-@import 'foresdon/diff';
+@use 'foresdon/variables';
+@use 'foresdon/css_variables';
+@use 'application';
+@use 'foresdon/diff' with (
+  $foresdon-background-image: 'foresdon/foresdon-surmary.png'
+);
