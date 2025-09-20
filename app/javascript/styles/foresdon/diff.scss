@@ -129,6 +129,12 @@ body {
   }
 }
 
+.column-back-button {
+  background: $foresdon-background-color;
+  border: none;
+  border-radius: $foresdon-border-radius-top;
+}
+
 .column-settings,
 .announcements,
 .column-search-header {
