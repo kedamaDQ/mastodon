@@ -70,5 +70,5 @@
       queue: scheduler
     fasp_follow_recommendation_cleanup_scheduler:
       interval: 1 day
-      class: Scheduler::Fasp::FollowRecommendationCleanupScheduler
+      class: Scheduler::Fasp::FollowRecommendationsScheduler
       queue: scheduler
