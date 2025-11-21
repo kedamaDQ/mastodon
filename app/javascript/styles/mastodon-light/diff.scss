@@ -101,7 +101,7 @@
 }
 
 // Change the background colors of statuses
-.focusable:focus-visible {
+.focusable:focus {
   background: lighten($white, 4%);
 }
 
