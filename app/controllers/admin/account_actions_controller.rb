@@ -14,20 +14,16 @@ module Admin
     def create
       authorize @account, :show?
 
-      @account_action                 = Admin::AccountAction.new(resource_params)
-      @account_action.target_account  = @account
-      @account_action.current_account = current_account
+      account_action                 = Admin::AccountAction.new(resource_params)
+      account_action.target_account  = @account
+      account_action.current_account = current_account
 
-      if @account_action.save
-        if @account_action.with_report?
-          redirect_to admin_reports_path, notice: I18n.t('admin.reports.processed_msg', id: resource_params[:report_id])
-        else
-          redirect_to admin_account_path(@account.id)
-        end
+      account_action.save!
+
+      if account_action.with_report?
+        redirect_to admin_reports_path, notice: I18n.t('admin.reports.processed_msg', id: resource_params[:report_id])
       else
-        @warning_presets = AccountWarningPreset.all
-
-        render :new
+        redirect_to admin_account_path(@account.id)
       end
     end
 
