@@ -288,30 +288,7 @@ class ComposeForm extends ImmutablePureComponent {
         <div className={classNames('compose-form__highlightable', { active: highlighted })} ref={this.setRef}>
           <EditIndicator />
 
-          <div className='compose-form__dropdowns'>
-            <VisibilityButton disabled={this.props.isEditing} />
-            <LanguageDropdown />
-          </div>
-          <div className='fixed-input'>
-            <AutosuggestInput
-              placeholder='#dqxtv #delmulin ...'
-              value={this.props.fixedText}
-              onChange={this.handleChangeFixedText}
-              onKeyDown={this.handleKeyDown}
-              disabled={false}
-              ref={this.setFixedText}
-              suggestions={this.props.suggestions}
-              onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
-              onSuggestionsClearRequested={this.onSuggestionsClearRequested}
-              onSuggestionSelected={this.onFixedSuggestionSelected}
-              searchTokens={['#']}
-              autoFocus={false}
-              id='fixed-input'
-              className={`fixed-input__input`}
-            />
-          </div>
-
-          {this.props.spoiler && (
+         {this.props.spoiler && (
             <div className='spoiler-input'>
               <div className='spoiler-input__border' />
 
@@ -355,9 +332,33 @@ class ComposeForm extends ImmutablePureComponent {
             className='compose-form__input'
           />
 
+          <ComposeQuotedStatus />
+
+          <div className='fixed-input'>
+            <AutosuggestInput
+              placeholder='#dqxtv #delmulin ...'
+              value={this.props.fixedText}
+              onChange={this.handleChangeFixedText}
+              onKeyDown={this.handleKeyDown}
+              disabled={false}
+              ref={this.setFixedText}
+              suggestions={this.props.suggestions}
+              onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
+              onSuggestionsClearRequested={this.onSuggestionsClearRequested}
+              onSuggestionSelected={this.onFixedSuggestionSelected}
+              searchTokens={['#']}
+              autoFocus={false}
+              id='fixed-input'
+              className={`fixed-input__input`}
+            />
+          </div>
+          <div className='compose-form__dropdowns'>
+            <VisibilityButton disabled={this.props.isEditing} />
+            <LanguageDropdown />
+          </div>
+ 
           <UploadForm />
           <PollForm />
-          <ComposeQuotedStatus />
 
           <div className='compose-form__footer'>
             <div className='compose-form__actions'>
@@ -368,36 +369,27 @@ class ComposeForm extends ImmutablePureComponent {
                 <EmojiPickerDropdown onPickEmoji={this.handleEmojiPick} />
                 <CharacterCounter max={maxChars} text={this.getFulltextForCharacterCounting()} />
               </div>
-
-              <div className='compose-form__submit'>
-                <Button
-                  type='submit'
-                  compact
-                  disabled={!this.canSubmit()}
-                  loading={isSubmitting}
-                >
-                  {intl.formatMessage(
-                    this.props.isEditing ?
-                      messages.saveChanges :
-                      (this.props.isInReply ? messages.reply : messages.publish)
-                  )}
-                </Button>
-              </div>
             </div>
           </div>
         </div>
         <div className='compose-form__submit'>
           <Button
             type='button'
-            text={intl.formatMessage(messages.eliminateGaps)}
             disabled={!this.canEliminateGaps()}
             onClick={this.handleElimenateGaps}
-          />
+          >
+            {intl.formatMessage(messages.eliminateGaps)}
+          </Button>
+
           <Button
             type='submit'
-            text={intl.formatMessage(this.props.isEditing ? messages.saveChanges : (this.props.isInReply ? messages.reply : messages.publish))}
             disabled={!this.canSubmit()}
-          />
+            loading={isSubmitting}
+          >
+            {intl.formatMessage(
+              this.props.isEditing ? messages.saveChanges : (this.props.isInReply ? messages.reply : messages.publish)
+            )}
+          </Button>
         </div>
       </form>
     );
