@@ -2,7 +2,6 @@
 
 class Admin::StatusBatchAction
   include ActiveModel::Model
-  include ActiveModel::Attributes
   include AccountableConcern
   include Authorization
 
@@ -10,7 +9,11 @@ class Admin::StatusBatchAction
                 :status_ids, :report_id,
                 :text
 
-  attribute :send_email_notification, :boolean
+  attr_reader :send_email_notification
+
+  def send_email_notification=(value)
+    @send_email_notification = ActiveModel::Type::Boolean.new.cast(value)
+  end
 
   def save!
     process_action!
