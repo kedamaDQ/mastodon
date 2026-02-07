@@ -204,6 +204,15 @@ body {
   }
 }
 
+.empty-column-indicator,
+.error-column {
+  background: $foresdon-background-color;
+}
+
+.item-list {
+  background: $foresdon-background-color;
+}
+
 /*
 .simple_form .button.button-tertiary {
   color: $highlight-text-color;
