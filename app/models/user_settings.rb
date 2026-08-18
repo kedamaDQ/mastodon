@@ -21,7 +21,7 @@ class UserSettings
   setting_inverse_alias :indexable, :noindex
 
   namespace :web do
-    setting :advanced_layout, default: false
+    setting :advanced_layout, default: true
     setting :trends, default: true
     setting :use_blurhash, default: true
     setting :use_pending_items, default: false
