@@ -268,7 +268,7 @@
   "compose_form.save_changes": "更新",
   "compose_form.spoiler.marked": "本文は警告の後ろに隠されます",
   "compose_form.spoiler.unmarked": "本文は隠されていません",
-  "compose_form.spoiler_placeholder": "閲覧注意 (オプション)",
+  "compose_form.spoiler_placeholder": "隠す理由はなんでしょう？",
   "confirmation_modal.cancel": "キャンセル",
   "confirmations.block.confirm": "ブロック",
   "confirmations.delete.confirm": "削除",
