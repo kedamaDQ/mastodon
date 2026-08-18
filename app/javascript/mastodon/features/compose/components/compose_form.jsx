@@ -35,12 +35,15 @@ import { VisibilityButton } from './visibility_button';
 
 const allowedAroundShortCode = '><\u0085\u0020\u00a0\u1680\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u202f\u205f\u3000\u2028\u2029\u0009\u000a\u000b\u000c\u000d';
 
+const eliminatableGapsRe = /:[0-9a-zA-Z_]{2,}: +:[0-9a-zA-Z_]{2,}:/m;
+
 const messages = defineMessages({
   placeholder: { id: 'compose_form.placeholder', defaultMessage: 'What is on your mind?' },
   spoiler_placeholder: { id: 'compose_form.spoiler_placeholder', defaultMessage: 'Content warning (optional)' },
   publish: { id: 'compose_form.publish', defaultMessage: 'Post' },
   saveChanges: { id: 'compose_form.save_changes', defaultMessage: 'Update' },
   reply: { id: 'compose_form.reply', defaultMessage: 'Reply' },
+  eliminate_gaps: { id: 'compose_form.eliminate_gaps', defaultMessage: 'Eliminate gaps' },
 });
 
 class ComposeForm extends ImmutablePureComponent {
@@ -60,6 +63,7 @@ class ComposeForm extends ImmutablePureComponent {
     isUploading: PropTypes.bool,
     onChange: PropTypes.func.isRequired,
     onSubmit: PropTypes.func.isRequired,
+    onEliminateGaps: PropTypes.func.isRequired,
     onClearSuggestions: PropTypes.func.isRequired,
     onFetchSuggestions: PropTypes.func.isRequired,
     onSuggestionSelected: PropTypes.func.isRequired,
@@ -147,6 +151,16 @@ class ComposeForm extends ImmutablePureComponent {
     if (e) {
       e.preventDefault();
     }
+  };
+
+
+  hasEliminatableGaps = () => {
+    const { isSubmitting, text, spoilerText } = this.props;
+    return !isSubmitting && (eliminatableGapsRe.test(text) || eliminatableGapsRe.test(spoilerText));
+  };
+
+  handleEliminateGaps = (e) => {
+    this.props.onEliminateGaps();
   };
 
   onSuggestionsClearRequested = () => {
@@ -329,23 +343,31 @@ class ComposeForm extends ImmutablePureComponent {
                 <EmojiPickerDropdown onPickEmoji={this.handleEmojiPick} />
                 <CharacterCounter max={maxChars} text={this.getFulltextForCharacterCounting()} />
               </div>
-
-              <div className='compose-form__submit'>
-                <Button
-                  type='submit'
-                  compact
-                  disabled={!this.canSubmit()}
-                  loading={isSubmitting}
-                >
-                  {intl.formatMessage(
-                    this.props.isEditing ?
-                      messages.saveChanges :
-                      (this.props.isInReply ? messages.reply : messages.publish)
-                  )}
-                </Button>
-              </div>
             </div>
           </div>
+        </div>
+        <div className='compose-form__submit'>
+          <Button
+            type='button'
+            compact
+            disabled={!this.hasEliminatableGaps()}
+            onClick={this.handleEliminateGaps}
+          >
+            {intl.formatMessage(messages.eliminate_gaps)}
+          </Button>
+
+          <Button
+            type='submit'
+            compact
+            disabled={!this.canSubmit()}
+            loading={isSubmitting}
+          >
+            {intl.formatMessage(
+              this.props.isEditing ?
+                messages.saveChanges :
+                (this.props.isInReply ? messages.reply : messages.publish)
+            )}
+          </Button>
         </div>
       </form>
     );

@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import {
   changeCompose,
   submitCompose,
+  eliminateGaps,
   clearComposeSuggestions,
   fetchComposeSuggestions,
   selectComposeSuggestion,
@@ -85,6 +86,10 @@ const mapDispatchToProps = (dispatch, props) => ({
         }
       }));
     }
+  },
+
+  onEliminateGaps () {
+    dispatch(eliminateGaps());
   },
 
   onClearSuggestions () {

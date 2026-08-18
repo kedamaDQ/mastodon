@@ -77,6 +77,8 @@ export const COMPOSE_CHANGE_MEDIA_ORDER       = 'COMPOSE_CHANGE_MEDIA_ORDER';
 export const COMPOSE_SET_STATUS = 'COMPOSE_SET_STATUS';
 export const COMPOSE_FOCUS = 'COMPOSE_FOCUS';
 
+export const COMPOSE_ELIMINATE_GAPS = 'COMPOSE_ELIMINATE_GAPS';
+
 const messages = defineMessages({
   uploadErrorLimit: { id: 'upload_error.limit', defaultMessage: 'File upload limit exceeded.' },
   uploadErrorPoll:  { id: 'upload_error.poll', defaultMessage: 'File upload not allowed with polls.' },
@@ -812,4 +814,8 @@ export const changeMediaOrder = (a, b) => ({
   type: COMPOSE_CHANGE_MEDIA_ORDER,
   a,
   b,
+});
+
+export const eliminateGaps = () => ({
+  type: COMPOSE_ELIMINATE_GAPS,
 });
