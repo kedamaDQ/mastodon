@@ -284,6 +284,7 @@ export function submitCompose(successCallback) {
         insertIfOnline(`account:${response.data.account.id}`);
       }
 
+/*
       dispatch(showAlert({
         message: statusId === null ? messages.published : messages.saved,
         action: messages.open,
@@ -293,6 +294,7 @@ export function submitCompose(successCallback) {
           { focusTarget: 'detailed-status' }
         ),
       }));
+*/
     }).catch(function (error) {
       dispatch(submitComposeFail(error));
     });
