@@ -13,9 +13,13 @@ const selector = createSelector(
   (state: RootState) => state.compose.get('privacy') as string,
   (state: RootState) => !!state.accounts.getIn([me, 'locked']),
   (state: RootState) => state.compose.get('text') as string,
-  (privacy, locked, text) => ({
+  (state: RootState) => state.compose.get('fixed_text') as string,
+  (state: RootState) => state.compose.get('fixed_text_separator') as string,
+  (privacy, locked, text, fixed_text_separator, fixed_text) => ({
     needsLockWarning: privacy === 'private' && !locked,
-    hashtagWarning: privacy !== 'public' && HASHTAG_PATTERN_REGEX.test(text),
+    hashtagWarning:
+      privacy !== 'public' &&
+      HASHTAG_PATTERN_REGEX.test(text + fixed_text_separator + fixed_text),
     directMessageWarning: privacy === 'direct',
   }),
 );

@@ -40,6 +40,7 @@ const eliminatableGapsRe = /:[0-9a-zA-Z_]{2,}: +:[0-9a-zA-Z_]{2,}:/m;
 const messages = defineMessages({
   placeholder: { id: 'compose_form.placeholder', defaultMessage: 'What is on your mind?' },
   spoiler_placeholder: { id: 'compose_form.spoiler_placeholder', defaultMessage: 'Content warning (optional)' },
+  fixed_text_placeholder: { id: 'compose_form.fixed_text_placeholder', defaultMessage: '#dqxtv #delmulin ...' },
   publish: { id: 'compose_form.publish', defaultMessage: 'Post' },
   saveChanges: { id: 'compose_form.save_changes', defaultMessage: 'Update' },
   reply: { id: 'compose_form.reply', defaultMessage: 'Reply' },
@@ -54,6 +55,9 @@ class ComposeForm extends ImmutablePureComponent {
     spoiler: PropTypes.bool,
     privacy: PropTypes.string,
     spoilerText: PropTypes.string,
+    fixedText: PropTypes.string,
+    fixedTextExists: PropTypes.bool,
+    fixedTextSeparator: PropTypes.string,
     focusDate: PropTypes.instanceOf(Date),
     caretPosition: PropTypes.number,
     preselectDate: PropTypes.instanceOf(Date),
@@ -68,6 +72,7 @@ class ComposeForm extends ImmutablePureComponent {
     onFetchSuggestions: PropTypes.func.isRequired,
     onSuggestionSelected: PropTypes.func.isRequired,
     onChangeSpoilerText: PropTypes.func.isRequired,
+    onChangeFixedText: PropTypes.func.isRequired,
     onPaste: PropTypes.func.isRequired,
     onDrop: PropTypes.func.isRequired,
     onPickEmoji: PropTypes.func.isRequired,
@@ -121,8 +126,24 @@ class ComposeForm extends ImmutablePureComponent {
     this.blurOnEscape(e);
   };
 
+  handleKeyDownFixed = (e) => {
+    if (e.key.toLowerCase() === 'enter') {
+      if (e.ctrlKey || e.metaKey) {
+        this.handleSubmit();
+      } else {
+        e.preventDefault();
+        this.textareaRef.current?.focus();
+      }
+    }
+    this.blurOnEscape(e);
+  };
+
   getFulltextForCharacterCounting = () => {
-    return [this.props.spoiler? this.props.spoilerText: '', countableText(this.props.text)].join('');
+    return [
+      this.props.spoiler? this.props.spoilerText: '',
+      countableText(this.props.text),
+      this.props.fixedTextExists ? this.props.fixedTextSeparator + this.props.fixedText : ''
+    ].join('');
   };
 
   canSubmit = () => {
@@ -179,8 +200,16 @@ class ComposeForm extends ImmutablePureComponent {
     this.props.onSuggestionSelected(tokenStart, token, value, ['spoiler_text']);
   };
 
+  onFixedSuggestionSelected = (tokenStart, token, value) => {
+    this.props.onSuggestionSelected(tokenStart, token, value, ['fixed_text']);
+  };
+
   handleChangeSpoilerText = (e) => {
     this.props.onChangeSpoilerText(e.target.value);
+  };
+
+  handleChangeFixedText = (e) => {
+    this.props.onChangeFixedText(e.target.value);
   };
 
   handleFocus = () => {
@@ -246,6 +275,10 @@ class ComposeForm extends ImmutablePureComponent {
 
   setSpoilerText = (c) => {
     this.spoilerText = c;
+  };
+
+  setFixedText = (c) => {
+    this.fixedText = c;
   };
 
   setRef = c => {
@@ -324,6 +357,25 @@ class ComposeForm extends ImmutablePureComponent {
             lang={this.props.lang}
             className='compose-form__input'
           />
+          <div className='spoiler-input'>
+            <AutosuggestInput
+              placeholder={intl.formatMessage(messages.fixed_text_placeholder)}
+              value={this.props.fixedText}
+              disabled={isSubmitting}
+              onChange={this.handleChangeFixedText}
+              onKeyDown={this.handleKeyDownFixed}
+              ref={this.setFixedText}
+              suggestions={this.props.suggestions}
+              onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
+              onSuggestionsClearRequested={this.onSuggestionsClearRequested}
+              onSuggestionSelected={this.onFixedSuggestionSelected}
+              searchTokens={['#']}
+              id='fixed-input'
+              className='spoiler-input__input'
+              lang={this.props.lang}
+              spellCheck
+            />
+          </div>
 
           <div className='compose-form__dropdowns'>
             <VisibilityButton disabled={this.props.isEditing} />

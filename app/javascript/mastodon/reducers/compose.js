@@ -54,6 +54,7 @@ import {
   COMPOSE_SET_STATUS,
   COMPOSE_FOCUS,
   COMPOSE_ELIMINATE_GAPS,
+  COMPOSE_FIXED_TEXT_CHANGE,
 } from '../actions/compose';
 import { REDRAFT } from '../actions/statuses';
 import { STORE_HYDRATE } from '../actions/store';
@@ -66,6 +67,9 @@ const initialState = ImmutableMap({
   sensitive: false,
   spoiler: false,
   spoiler_text: '',
+  fixed_text: '',
+  fixed_text_exists: false,
+  fixed_text_separator: '\n\n',
   privacy: null,
   id: null,
   text: '',
@@ -415,6 +419,11 @@ export const composeReducer = (state = initialState, action) => {
     if (!state.get('spoiler')) return state;
     return state
       .set('spoiler_text', action.text)
+      .set('idempotencyKey', uuid());
+  case COMPOSE_FIXED_TEXT_CHANGE:
+    return state
+      .set('fixed_text', action.text)
+      .set('fixed_text_exists', action.text.trim().length > 0)
       .set('idempotencyKey', uuid());
   case COMPOSE_CHANGE:
     return state
