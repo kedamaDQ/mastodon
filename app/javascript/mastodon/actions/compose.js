@@ -77,6 +77,9 @@ export const COMPOSE_CHANGE_MEDIA_ORDER       = 'COMPOSE_CHANGE_MEDIA_ORDER';
 export const COMPOSE_SET_STATUS = 'COMPOSE_SET_STATUS';
 export const COMPOSE_FOCUS = 'COMPOSE_FOCUS';
 
+export const COMPOSE_ELIMINATE_GAPS = 'COMPOSE_ELIMINATE_GAPS';
+export const COMPOSE_FIXED_TEXT_CHANGE = 'COMPOSE_FIXED_TEXT_CHANGE';
+
 const messages = defineMessages({
   uploadErrorLimit: { id: 'upload_error.limit', defaultMessage: 'File upload limit exceeded.' },
   uploadErrorPoll:  { id: 'upload_error.poll', defaultMessage: 'File upload not allowed with polls.' },
@@ -189,7 +192,12 @@ export function directCompose(account) {
 
 export function submitCompose(successCallback) {
   return function (dispatch, getState) {
-    const status   = getState().getIn(['compose', 'text'], '');
+    const status   = getState().getIn(['compose', 'fixed_text_exists'])?
+      [
+        getState().getIn(['compose', 'text']),
+        getState().getIn(['compose', 'fixed_text']),
+      ].join(getState().getIn(['compose', 'fixed_text_separator'], ' ')):
+      getState().getIn(['compose', 'text'], '');
     const media    = getState().getIn(['compose', 'media_attachments']);
     const statusId = getState().getIn(['compose', 'id'], null);
     const hasQuote = !!getState().getIn(['compose', 'quoted_status_id']);
@@ -284,6 +292,7 @@ export function submitCompose(successCallback) {
         insertIfOnline(`account:${response.data.account.id}`);
       }
 
+/*
       dispatch(showAlert({
         message: statusId === null ? messages.published : messages.saved,
         action: messages.open,
@@ -293,6 +302,7 @@ export function submitCompose(successCallback) {
           { focusTarget: 'detailed-status' }
         ),
       }));
+*/
     }).catch(function (error) {
       dispatch(submitComposeFail(error));
     });
@@ -810,4 +820,13 @@ export const changeMediaOrder = (a, b) => ({
   type: COMPOSE_CHANGE_MEDIA_ORDER,
   a,
   b,
+});
+
+export const eliminateGaps = () => ({
+  type: COMPOSE_ELIMINATE_GAPS,
+});
+
+export const changeComposeFixedText = (text) => ({
+  type: COMPOSE_FIXED_TEXT_CHANGE,
+  text,
 });

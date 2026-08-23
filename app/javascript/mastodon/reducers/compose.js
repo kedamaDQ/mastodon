@@ -53,6 +53,8 @@ import {
   COMPOSE_CHANGE_MEDIA_ORDER,
   COMPOSE_SET_STATUS,
   COMPOSE_FOCUS,
+  COMPOSE_ELIMINATE_GAPS,
+  COMPOSE_FIXED_TEXT_CHANGE,
 } from '../actions/compose';
 import { REDRAFT } from '../actions/statuses';
 import { STORE_HYDRATE } from '../actions/store';
@@ -65,6 +67,9 @@ const initialState = ImmutableMap({
   sensitive: false,
   spoiler: false,
   spoiler_text: '',
+  fixed_text: '',
+  fixed_text_exists: false,
+  fixed_text_separator: '\n\n',
   privacy: null,
   id: null,
   text: '',
@@ -105,6 +110,8 @@ const initialPoll = ImmutableMap({
   expires_in: 24 * 3600,
   multiple: false,
 });
+
+const eliminateGapsRe = /(:[0-9a-zA-Z_]{2,}:) +(:[0-9a-zA-Z_]{2,}:)/gm;
 
 function statusToTextMentions(state, status) {
   let set = ImmutableOrderedSet([]);
@@ -413,6 +420,11 @@ export const composeReducer = (state = initialState, action) => {
     return state
       .set('spoiler_text', action.text)
       .set('idempotencyKey', uuid());
+  case COMPOSE_FIXED_TEXT_CHANGE:
+    return state
+      .set('fixed_text', action.text)
+      .set('fixed_text_exists', action.text.trim().length > 0)
+      .set('idempotencyKey', uuid());
   case COMPOSE_CHANGE:
     return state
       .set('text', action.text)
@@ -626,6 +638,16 @@ export const composeReducer = (state = initialState, action) => {
 
       return list.splice(indexA, 1).splice(indexB, 0, moveItem);
     });
+  case COMPOSE_ELIMINATE_GAPS:
+    return state
+      .set('text', state.get('text')
+        .replaceAll(eliminateGapsRe, `$1\u200B$2`)
+        .replaceAll(eliminateGapsRe, `$1\u200B$2`)
+      )
+      .set('spoiler_text', state.get('spoiler_text')
+        .replaceAll(eliminateGapsRe, `$1\u200B$2`)
+        .replaceAll(eliminateGapsRe, `$1\u200B$2`)
+      );
   default:
     return state;
   }

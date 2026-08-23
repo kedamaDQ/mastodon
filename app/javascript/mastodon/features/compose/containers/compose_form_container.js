@@ -3,10 +3,12 @@ import { connect } from 'react-redux';
 import {
   changeCompose,
   submitCompose,
+  eliminateGaps,
   clearComposeSuggestions,
   fetchComposeSuggestions,
   selectComposeSuggestion,
   changeComposeSpoilerText,
+  changeComposeFixedText,
   insertEmojiCompose,
   uploadCompose,
 } from 'mastodon/actions/compose';
@@ -41,6 +43,9 @@ const mapStateToProps = state => ({
   suggestions: state.getIn(['compose', 'suggestions']),
   spoiler: state.getIn(['compose', 'spoiler']),
   spoilerText: state.getIn(['compose', 'spoiler_text']),
+  fixedText: state.getIn(['compose', 'fixed_text']),
+  fixedTextExists: state.getIn(['compose', 'fixed_text_exists']),
+  fixedTextSeparator: state.getIn(['compose', 'fixed_text_separator']),
   privacy: state.getIn(['compose', 'privacy']),
   focusDate: state.getIn(['compose', 'focusDate']),
   caretPosition: state.getIn(['compose', 'caretPosition']),
@@ -87,6 +92,10 @@ const mapDispatchToProps = (dispatch, props) => ({
     }
   },
 
+  onEliminateGaps () {
+    dispatch(eliminateGaps());
+  },
+
   onClearSuggestions () {
     dispatch(clearComposeSuggestions());
   },
@@ -101,6 +110,10 @@ const mapDispatchToProps = (dispatch, props) => ({
 
   onChangeSpoilerText (checked) {
     dispatch(changeComposeSpoilerText(checked));
+  },
+
+  onChangeFixedText (checked) {
+    dispatch(changeComposeFixedText(checked));
   },
 
   onPaste (e) {
